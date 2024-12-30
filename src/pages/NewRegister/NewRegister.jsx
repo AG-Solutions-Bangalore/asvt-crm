@@ -216,7 +216,7 @@ const NewRegister = () => {
               <IconEdit
                 className="cursor-pointer text-blue-600 hover:text-blue-800"
                 onClick={() => {
-                  navigate(`/newregister/edit/${row.original.id}`);
+                  navigate(`/test/edit/${row.original.id}`);
                 }}
               />
             </Tooltip>

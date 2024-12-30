@@ -242,6 +242,7 @@ const Married = () => {
         header: "Place of Birth",
         size: 50,
       },
+
       {
         id: "id",
         header: "Action",
@@ -322,7 +323,15 @@ const Married = () => {
             </Text>
           </Center>
         ) : (
-          <MantineReactTable table={table} />
+          <MantineReactTable
+            table={table}
+            mantineTableContainerProps={{
+              sx: {
+                overflowX: "auto", // Enable horizontal scrolling
+                maxWidth: "100%", // Ensure it adapts to the container
+              },
+            }}
+          />
         )}
       </Box>
       <Dialog
