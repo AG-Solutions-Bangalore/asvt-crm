@@ -1,6 +1,6 @@
 import React from "react";
 
-const SelectInput = ({
+const SelectInputOne = ({
   label,
   name,
   options,
@@ -16,7 +16,7 @@ const SelectInput = ({
   return (
     <div>
       <label className="block text-xs font-semibold text-grey mb-1">
-        {label}
+        {/* {label} */}
         {required && <span className="text-red-500 ml-1">*</span>}
       </label>
       <select
@@ -26,8 +26,13 @@ const SelectInput = ({
         onBlur={onBlur}
         required={required}
         className={inputClassSelect}
+        style={{
+          appearance: "none", // Remove the native dropdown arrow
+          WebkitAppearance: "none", // For Safari
+          MozAppearance: "none", // For Firefox
+        }}
       >
-        <option value="">Select {label}</option>
+        <option value=""> {label}</option>
         {options.map((option) => (
           <option key={option.value} value={option.value}>
             {option.label}
@@ -45,4 +50,4 @@ const SelectInput = ({
   );
 };
 
-export default SelectInput;
+export default SelectInputOne;
