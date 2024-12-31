@@ -25,6 +25,7 @@ import EditNotification from "./pages/Notification/EditNotification";
 import ViewValidity from "./pages/Validity/ViewValidity";
 import EditValidity from "./pages/Validity/EditValidity";
 import Testing from "./pages/Testing";
+import { Testing1 } from "./pages/Testing1";
 const App = () => {
   return (
     <>
@@ -64,7 +65,7 @@ const App = () => {
         <Route path="/notification" element={<Notification />} />
         <Route path="/notification/add" element={<CreateNotification />} />
         <Route path="/notification/edit/:id" element={<EditNotification />} />
-        <Route path="/test/edit/:id" element={<Testing/>} />
+        <Route path="/test/view/:id" element={<Testing1/>} />
       </Routes>
     </>
   );
