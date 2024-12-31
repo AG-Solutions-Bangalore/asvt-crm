@@ -1,14 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
-import Layout from "../../layout/Layout";
-import logo from "../../assets/receipt/ag_small.png";
+import Layout from "../layout/Layout";
+import logo from "../assets/receipt/ag_small.png";
 import { IconPrinter } from "@tabler/icons-react";
 import ReactToPrint from "react-to-print";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
-import BASE_URL, { ImagePath, NoImagePath } from "../../base/BaseUrl";
+import BASE_URL, { ImagePath, NoImagePath } from "../base/BaseUrl";
 import moment from "moment";
-import view from "../../assets/receipt/download.png";
+// import view from "../assets/receipt/view.jpg"
+import view from "../assets/receipt/download.png";
 const printStyles = `
 @media print {
 
@@ -36,12 +37,11 @@ const printStyles = `
 }
 `;
 
-export const ViewMarried = () => {
+export const Testing1 = () => {
   const printRef = useRef(null);
   const { id } = useParams();
   const [data, setData] = useState({});
-  const [groom, setGroom] = useState({});
-  const [bride, setBride] = useState({});
+
   const getTemplateData = async () => {
     try {
       const res = await axios.get(`${BASE_URL}/panel-fetch-by-id/${id}`, {
@@ -55,8 +55,6 @@ export const ViewMarried = () => {
       } else {
         throw new Error("User data is missing");
       }
-      setGroom(res.data.groom);
-      setBride(res.data.bride);
     } catch (error) {
       console.error("Failed to fetch user:", error);
       toast.error("Failed to load user data");
@@ -121,21 +119,18 @@ export const ViewMarried = () => {
               </div>
 
               <div className="space-y-3 relative">
-                {(data.profile_divorce_status == "Yes and Divorced" ||
-                  data.profile_divorce_status == "Yes and Spouse died") && (
-                  <div
-                    style={{
-                      backgroundImage: `url(${view})`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                      height: "100px",
-                      width: "150px",
-                      position: "absolute",
-                      right: "30px",
-                      top: "0",
-                    }}
-                  ></div>
-                )}
+                <div
+                  style={{
+                    backgroundImage: `url(${view})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    height: "100px",
+                    width: "150px",
+                    position: "absolute",
+                    right: "30px",
+                    top: "0",
+                  }}
+                ></div>
                 <div className="flex text-blue-500 font-normal gap-2 border-b mt-2">
                   <span>Qualification</span>:
                   <span>{data.profile_education_qualification}</span>
@@ -350,7 +345,7 @@ export const ViewMarried = () => {
                           </span>
 
                           <span className="block border-gray-300 text-[14px] mt-[0.23rem]">
-                            {bride.ranges}
+                            No data
                           </span>
                         </div>
                         <div className="grid grid-cols-2 border-b">
@@ -359,7 +354,7 @@ export const ViewMarried = () => {
                           </span>
 
                           <span className="block border-gray-300 text-[14px] mt-[0.23rem]">
-                            {groom.ranges}
+                            No data
                           </span>
                         </div>
                         <div className="grid grid-cols-2 border-b">
@@ -459,4 +454,3 @@ export const ViewMarried = () => {
     </Layout>
   );
 };
-export default ViewMarried;

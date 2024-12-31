@@ -209,6 +209,7 @@ const NewRegister = () => {
                 className="cursor-pointer text-blue-600 hover:text-blue-800"
                 onClick={() => {
                   navigate(`/newregister/view/${row.original.id}`);
+                  // navigate(`/test/view/${row.original.id}`);
                 }}
               />
             </Tooltip>
