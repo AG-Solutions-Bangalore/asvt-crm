@@ -117,7 +117,7 @@ const Female = () => {
         header: "Profile Photo",
         size: 150,
         Cell: ({ row }) => {
-          const profilePhoto = row.original.profile_photo;
+          const profilePhoto = row.original.profile_full_face_photo_file_name;
           const imagePath = profilePhoto
             ? `${ImagePath}${profilePhoto}?t=${RandomValue}`
             : NoImagePath;

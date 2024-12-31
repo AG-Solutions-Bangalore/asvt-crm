@@ -53,7 +53,7 @@ const ViewValidity = () => {
 
       if (res.data?.user) {
         setData(res.data.user);
-        setImage(res.data.user.profile_photo);
+        setImage(res.data.user.profile_full_face_photo_file_name);
       } else {
         throw new Error("User data is missing");
       }
