@@ -35,6 +35,7 @@ const validationSchema = Yup.object({
   ),
   // profile_height_feet: Yup.number().required("Feet is required"),
   // profile_height_inches: Yup.number().required("Inches is required"),
+
   profile_father_full_name: Yup.string().required("Father Name is required"),
   profile_mother_full_name: Yup.string().required("Mother Name is required"),
   profile_profession: Yup.string().required("profession is required"),
@@ -154,9 +155,7 @@ const Testing = () => {
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [selectedbudget, setSelectedBudget] = useState([]);
   const [education, setEducation] = useState([]);
-  const [community, setCommunity] = useState([]);
-  const [gotra, setGotra] = useState([]);
-  const [communityId, setCommunityId] = useState("");
+
   const [heightfeet, setHeightFeet] = useState("");
   const [heightinches, setHeightInches] = useState("");
   const [payment, setPayment] = useState([]);
@@ -184,6 +183,7 @@ const Testing = () => {
       setCommunityId(res.data.user.profile_comunity_name);
       setHeightFeet(feet);
       setHeightInches(inches);
+      console.log(res.data.user.profile_comunity_name);
     } catch (error) {
       console.error("Failed to fetch user:", error);
       toast.error("Failed to load user data");
@@ -239,6 +239,12 @@ const Testing = () => {
       toast.error("Failed to load education data");
     }
   };
+  const [community, setCommunity] = useState([]);
+  const [gotra, setGotra] = useState([]);
+  const [communityId, setCommunityId] = useState(""); // Track the selected community ID
+  const [communityName, setCommunityName] = useState(""); // Track the selected community name
+
+  // Fetch community data
   const getCommunity = async () => {
     try {
       const res = await axios.get(`${BASE_URL}/panel-fetch-comunity`, {
@@ -248,9 +254,20 @@ const Testing = () => {
       });
 
       if (res.data?.comm) {
-        setCommunity(res.data.comm);
+        // Assume 'conn' is the value you're comparing with
+        const selectedCommunity = res.data.comm.find(
+          (item) => item.community_name == communityId // Compare with communityId
+        );
+        console.log(selectedCommunity, "selectedCommunity");
+        if (selectedCommunity) {
+          setCommunityName(selectedCommunity.community_name);
+          setCommunityId(selectedCommunity.id);
+          setCommunity(res.data.comm);
+        } else {
+          console.error("No community found with the matching 'conn' value");
+        }
       } else {
-        throw new Error("community data is missing");
+        throw new Error("Community data is missing");
       }
     } catch (error) {
       console.error("Failed to fetch community:", error);
@@ -269,12 +286,20 @@ const Testing = () => {
         }
       );
 
-      setGotra(res.data.gotra);
+      if (res.data?.gotra) {
+        setGotra(res.data.gotra);
+      } else {
+        toast.error("Gotra data is missing");
+      }
     } catch (error) {
       console.error("Failed to fetch gotra:", error);
       toast.error("Failed to load gotra data");
     }
   };
+
+  useEffect(() => {
+    getCommunity();
+  }, [communityId]);
 
   useEffect(() => {
     if (communityId) {
@@ -283,6 +308,21 @@ const Testing = () => {
       console.log("Community ID is missing, skipping fetch.");
     }
   }, [communityId]);
+
+  const handleCommunityChange = (event) => {
+    const selectedCommunityName = event.target.value;
+    setCommunityName(selectedCommunityName);
+
+    const selectedCommunity = community.find(
+      (item) => item.community_name === selectedCommunityName
+    );
+    if (selectedCommunity) {
+      setCommunityId(selectedCommunity.id);
+    }
+
+    console.log("Selected Community Name:", selectedCommunityName);
+    console.log("Selected Community ID:", selectedCommunity?.id);
+  };
   useEffect(() => {
     getCommunity();
     getEducationdata();
@@ -311,7 +351,7 @@ const Testing = () => {
       "eduqualification_other",
       values.profile_eduqualification_other || ""
     );
-    formData.append("community", values.profile_comunity_name || "");
+    formData.append("community", communityId || "");
     formData.append("gotra", values.profile_gotra || "");
     formData.append(
       "profile_marry_in_comunity",
@@ -618,7 +658,7 @@ const Testing = () => {
         <div className="sticky top-0 p-2 mb-4 border-b-2 border-red-800 bg-red-50 rounded-lg flex">
           <h2 className="px-5 text-black text-lg flex items-center gap-2 p-2">
             <IconInfoCircle className="w-4 h-4" />
-            Edit Testing
+            Edit NewRegister
           </h2>
 
           <Tabs
@@ -960,7 +1000,8 @@ const Testing = () => {
                           </div>
                         </>
                       )}
-                      {/* <div>
+
+                      <div>
                         <SelectInput
                           label="My Community"
                           name="profile_comunity_name"
@@ -968,58 +1009,22 @@ const Testing = () => {
                             value: item.community_name,
                             label: item.community_name,
                           }))}
-                          value={values.profile_comunity_name}
+                          value={communityName}
                           required={true}
-                          onChange={(event) => {
-                            const selectedCommunityId = event.target.value;
-                            console.log(
-                              "Selected Community ID:",
-                              selectedCommunityId
-                            );
-
-                            handleChange(event);
-                            setCommunityId(selectedCommunityId);
-                          }}
+                          onChange={handleCommunityChange}
                           onBlur={handleBlur}
                           ErrorMessage={ErrorMessage}
                         />
-                      </div> */}
-                      <SelectInput
-                        label="My Community"
-                        name="profile_comunity_name"
-                        options={community.map((item) => ({
-                          value: item.community_name, // Use community_name as value
-                          label: item.community_name, // Use community_name as label
-                        }))}
-                        value={values.profile_comunity_name}
-                        required={true}
-                        onChange={(event) => {
-                          const selectedCommunityName = event.target.value;
-                          const selectedCommunity = community.find(
-                            (item) =>
-                              item.community_name === selectedCommunityName
-                          );
+                      </div>
 
-                          if (selectedCommunity) {
-                            console.log(
-                              "Selected Community ID:",
-                              selectedCommunity.id
-                            );
-                            setCommunityId(selectedCommunity.id);
-                          }
-
-                          handleChange(event);
-                        }}
-                        onBlur={handleBlur}
-                        ErrorMessage={ErrorMessage}
-                      />
                       <div>
                         <SelectInput
                           label="Gotra"
                           name="profile_gotra"
-                          options={gotra.map((item) => ({
+                          options={gotra.map((item, index) => ({
                             value: item.gotra_name,
                             label: item.gotra_name,
+                            key: index + 1,
                           }))}
                           value={values.profile_gotra}
                           required={true}
@@ -1043,43 +1048,7 @@ const Testing = () => {
                       <div>
                         <FormLabel required>Height</FormLabel>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {/* Feet Field */}
                           <div className="w-full md:w-[5rem]">
-                            {/* <SelectInputOne
-                              label="Feet"
-                              name="heightfeet"
-                              options={feet}
-                              // value={Math.floor(values.profile_height / 12)}
-                              // onChange={(e) => {
-                              //   const newFeet =
-                              //     parseInt(e.target.value, 10) || 0;
-                              //   const inches = values.profile_height % 12;
-                              //   setHeightFeet(newFeet);
-                              //   const newHeight = newFeet * 12 + inches;
-                              //   handleChange({
-                              //     target: {
-                              //       name: "profile_height",
-                              //       value: newHeight,
-                              //     },
-                              //   });
-                              //   setHeightFeet(newFeet);
-                              // }}
-                              onChange={(e) => {
-                                let value = e.target.value;
-                                handleChange({
-                                  target: {
-                                    name: "profile_height_feet",
-                                    value,
-                                  },
-                                });
-
-                                console.log(value, "hfett");
-                              }}
-                              value={heightfeet}
-                              // onChange={handleChange}
-                              onBlur={handleBlur}
-                              ErrorMessage={ErrorMessage}
-                            /> */}
                             <SelectInputOne
                               label="Feet"
                               name="profile_height_feet"
@@ -1088,6 +1057,7 @@ const Testing = () => {
                               onChange={(e) => {
                                 const newValue = e.target.value;
                                 setHeightFeet(newValue);
+                                setFieldValue("profile_height_feet", newValue);
 
                                 // Update the form field value
                                 handleChange({
@@ -1100,37 +1070,16 @@ const Testing = () => {
                                 console.log(newValue, "hfett");
                               }}
                               onBlur={handleBlur}
-                              ErrorMessage={
-                                touched.profile_height_feet &&
-                                errors.profile_height_feet
-                              }
+                            />
+
+                            <ErrorMessage
+                              name="profile_height_feet"
+                              component="div"
+                              className="text-red-500 text-xs"
                             />
                           </div>
 
                           <div className="w-full md:w-[5rem]">
-                            {/* <SelectInputOne
-                              label="Inches"
-                              options={inches}
-                              name="profile_height_inches"
-                              value={values.profile_height % 12}
-                              onChange={(e) => {
-                                const inches =
-                                  parseInt(e.target.value, 10) || 0;
-                                const feet = Math.floor(
-                                  values.profile_height / 12
-                                );
-                                const newHeight = feet * 12 + inches;
-                                handleChange({
-                                  target: {
-                                    name: "profile_height",
-                                    value: newHeight,
-                                  },
-                                });
-                                setHeightInches(inches);
-                              }}
-                              onBlur={handleBlur}
-                              ErrorMessage={ErrorMessage}
-                            /> */}
                             <SelectInputOne
                               label="Inches"
                               options={inches}
@@ -1139,7 +1088,10 @@ const Testing = () => {
                               onChange={(e) => {
                                 const newValue = e.target.value;
                                 setHeightInches(newValue);
-
+                                setFieldValue(
+                                  "profile_height_inches",
+                                  newValue
+                                );
                                 handleChange({
                                   target: {
                                     name: "profile_height_inches",
@@ -1150,10 +1102,11 @@ const Testing = () => {
                                 console.log(newValue, "hinches");
                               }}
                               onBlur={handleBlur}
-                              ErrorMessage={
-                                touched.profile_height_inches &&
-                                errors.profile_height_inches
-                              }
+                            />
+                            <ErrorMessage
+                              name="profile_height_inches"
+                              component="div"
+                              className="text-red-500 text-xs"
                             />
                           </div>
                         </div>

@@ -45,11 +45,11 @@ const Validity = () => {
   const columns = useMemo(
     () => [
       {
-        accessorKey: "profile_photo",
+        accessorKey: "profile_full_face_photo_file_name",
         header: "Profile Photo",
         size: 150,
         Cell: ({ row }) => {
-          const profilePhoto = row.original.profile_photo;
+          const profilePhoto = row.original.profile_full_face_photo_file_name;
           const imagePath = profilePhoto
             ? `${ImagePath}${profilePhoto}?t=${RandomValue}`
             : NoImagePath;
@@ -117,7 +117,7 @@ const Validity = () => {
         size: 50,
       },
       {
-        accessorKey: "profile_mobile",
+        accessorKey: "profile_main_contact_num",
         header: "Mobile Number",
         size: 50,
       },

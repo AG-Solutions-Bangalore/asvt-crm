@@ -106,7 +106,6 @@ const Married = () => {
     payment_method: "",
     payment_date: "",
     payment_reference: "",
-    payment_date: "",
     payment_received: "",
     profile_validity_ends: "",
   });
@@ -241,12 +240,10 @@ const Married = () => {
       values.brief_father_profession || ""
     );
 
-    if (values.fullPhoto) {
-      formData.append("fullPhoto", values.profile_full_length_photo);
-    }
-    if (values.facePhoto) {
-      formData.append("facePhoto", values.profile_full_face_photo_file_name);
-    }
+    formData.append("fullPhoto", values.profile_full_length_photo);
+
+    formData.append("facePhoto", values.profile_full_face_photo_file_name);
+
     formData.append(
       "profile_physical_disablity",
       values.profile_physical_disablity || ""

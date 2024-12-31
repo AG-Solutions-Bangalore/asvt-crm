@@ -66,7 +66,7 @@ const Feedback = () => {
 
     try {
       await axios.put(
-        `${BASE_URL}/panel-update-deactivation/${postId}`,
+        `${BASE_URL}/panel-delete-feedback/${postId}`,
         {},
         {
           headers: {
@@ -75,9 +75,8 @@ const Feedback = () => {
         }
       );
 
-      toast.success("deactivated successfully");
-      // navigate("/newregister");
-      handleCloseDialog();
+      toast.success("Feedback deleted successfully");
+      fetchFeedbackdata(), handleCloseDialog();
     } catch (error) {
       toast.error(" error deactivated");
       console.error(error);
