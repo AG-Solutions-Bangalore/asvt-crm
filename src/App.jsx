@@ -24,8 +24,6 @@ import CreateNotification from "./pages/Notification/CreateNotification";
 import EditNotification from "./pages/Notification/EditNotification";
 import ViewValidity from "./pages/Validity/ViewValidity";
 import EditValidity from "./pages/Validity/EditValidity";
-import Testing from "./pages/Testing";
-import { Testing1 } from "./pages/Testing1";
 const App = () => {
   return (
     <>
@@ -44,8 +42,6 @@ const App = () => {
         <Route path="/forget-password" element={<ForgetPassword />} />
         <Route path="/home" element={<Home />} />
         <Route path="/maintenance" element={<Maintenance />} />
-        {/* //EMAIL MARKETING/////// */}
-        {/* //PPM */}
         <Route path="/newregister" element={<NewRegister />} />
         <Route path="/newregister/edit/:id" element={<EditNewRegister />} />
         <Route path="/newregister/view/:id" element={<ViewNewRegister />} />
@@ -65,7 +61,6 @@ const App = () => {
         <Route path="/notification" element={<Notification />} />
         <Route path="/notification/add" element={<CreateNotification />} />
         <Route path="/notification/edit/:id" element={<EditNotification />} />
-        <Route path="/test/view/:id" element={<Testing1/>} />
       </Routes>
     </>
   );
