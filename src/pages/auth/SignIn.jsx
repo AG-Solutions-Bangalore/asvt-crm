@@ -11,8 +11,8 @@ import * as Yup from "yup";
 
 const validationSchema = Yup.object({
   username: Yup.string()
-    .min(3, "Username must be at least 3 characters")
-    .required("Username is required"),
+    .min(1, "Profile Id must be at least 1 characters")
+    .required("Profile Id  is required"),
   password: Yup.string()
     .max(6, "Password must be max 4 characters")
     .required("Password is required"),
@@ -35,7 +35,7 @@ const SignIn = () => {
       const res = await axios.post(`${BASE_URL}/panel-login`, formData);
       console.log(res);
 
-      if (res.status === 200) {
+      if (res.data.code == 200) {
         const token = res.data.UserInfo?.token;
 
         localStorage.setItem("id", res.data.UserInfo.user.id);
@@ -49,7 +49,10 @@ const SignIn = () => {
           "profile_photo",
           res.data.UserInfo.user.profile_photo
         );
-
+        localStorage.setItem(
+          "profile_mobile",
+          res.data.UserInfo.user.profile_mobile
+        );
         if (token) {
           localStorage.setItem("token", token);
           navigate("/home");
@@ -61,12 +64,16 @@ const SignIn = () => {
           setSubmitting(false);
         }
       } else {
-        toast.error("Login Failed, Please check your credentials.");
+        toast.error(
+          res.data.msg || "Login Failed, Please check your credentials."
+        );
         setLoading(false);
         setSubmitting(false);
       }
     } catch (error) {
-      toast.error("An error occurred during login.");
+      toast.error(
+        error?.response?.data?.error || "An error occurred during login."
+      );
       setLoading(false);
       setSubmitting(false);
     }
@@ -129,7 +136,7 @@ const SignIn = () => {
                 <Form className="space-y-6">
                   <div>
                     <label className="block text-sm font-semibold text-black mb-1">
-                      Enter Your Username{" "}
+                      Enter Your Profile Id{" "}
                       <span className="text-red-500">*</span>
                     </label>
                     <Field
