@@ -11,8 +11,8 @@ import * as Yup from "yup";
 
 const forgotPasswordValidationSchema = Yup.object({
   username: Yup.string()
-    .min(3, "Username must be at least 3 characters")
-    .required("Username is required"),
+    .min(1, "Profile Id must be at least 1 characters")
+    .required("Profile Id is required"),
   email: Yup.string()
     .email("Invalid email format")
     .required("Email is required"),
@@ -106,7 +106,7 @@ const ForgetPassword = () => {
                 <Form className="space-y-6">
                   <div>
                     <label className="block text-sm font-semibold text-black mb-1">
-                      Enter Your Username{" "}
+                      Enter Your Profile Id{" "}
                       <span className="text-red-500">*</span>
                     </label>
                     <Field
