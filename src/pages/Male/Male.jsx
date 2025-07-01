@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import Layout from "../../layout/Layout";
 import axios from "axios";
 import BASE_URL from "../../base/BaseUrl";
-import { Tooltip, } from "@mantine/core";
+import { Tooltip } from "@mantine/core";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import * as Yup from "yup";
 import {
@@ -416,7 +416,7 @@ const Male = () => {
             my: "10px",
           }}
         >
-          Confirm Deavtivation
+          Confirm Deactivation
         </DialogTitle>
         <DialogContent>
           <DialogContentText
@@ -425,7 +425,7 @@ const Male = () => {
               my: "10px",
             }}
           >
-            Are you sure you want to Deavtivation?
+            Are you sure you want to Deactivation?
           </DialogContentText>
         </DialogContent>
         <DialogActions>

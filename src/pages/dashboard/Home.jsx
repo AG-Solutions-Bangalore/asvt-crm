@@ -170,25 +170,31 @@ const Home = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {newregister.map((item, index) => (
-                        <tr key={index} className="border-b">
-                          <td className="p-2 text-sm text-gray-800">
-                            <div className="flex items-center">
-                              {item.profile_gender === "Male" ? (
-                                <IconMan className="mr-2" />
-                              ) : (
-                                <IconWoman className="mr-2" />
+                      {newregister.length > 0 ? (
+                        newregister.map((item, index) => (
+                          <tr key={index} className="border-b">
+                            <td className="p-2 text-sm text-gray-800">
+                              <div className="flex items-center">
+                                {item.profile_gender === "Male" ? (
+                                  <IconMan className="mr-2" />
+                                ) : (
+                                  <IconWoman className="mr-2" />
+                                )}
+                                {item.name}
+                              </div>
+                            </td>
+                            <td className="p-2 text-sm text-gray-800">
+                              {moment(item.profile_date_of_birth).format(
+                                "DD-MMM-YYYY"
                               )}
-                              {item.name}
-                            </div>
-                          </td>
-                          <td className="p-2 text-sm text-gray-800">
-                            {moment(item.profile_date_of_birth).format(
-                              "DD-MMM-YYYY"
-                            )}
-                          </td>
-                        </tr>
-                      ))}
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <td className="p-2  text-black text-center" colSpan={2}>
+                          No Data Avaiable
+                        </td>
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -212,16 +218,22 @@ const Home = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {feedback.map((item, index) => (
-                        <tr key={index} className="border-b">
-                          <td className="p-2 text-sm text-gray-800">
-                            {item.from_name}
-                          </td>
-                          <td className="p-2 text-sm text-gray-800">
-                            {item.description}
-                          </td>
-                        </tr>
-                      ))}
+                      {feedback.length > 0 ? (
+                        feedback.map((item, index) => (
+                          <tr key={index} className="border-b">
+                            <td className="p-2 text-sm text-gray-800">
+                              {item.from_name}
+                            </td>
+                            <td className="p-2 text-sm text-gray-800">
+                              {item.description}
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <td className="p-2  text-black text-center" colSpan={2}>
+                          No Data Avaiable
+                        </td>
+                      )}
                     </tbody>
                   </table>
                 </div>

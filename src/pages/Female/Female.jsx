@@ -415,7 +415,7 @@ const Female = () => {
             my: "10px",
           }}
         >
-          Confirm Deavtivation
+          Confirm Deactivation
         </DialogTitle>
         <DialogContent>
           {" "}
@@ -425,7 +425,7 @@ const Female = () => {
               my: "10px",
             }}
           >
-            Are you sure you want to Deavtivation?
+            Are you sure you want to Deactivation?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
