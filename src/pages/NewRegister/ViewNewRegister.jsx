@@ -1,40 +1,14 @@
-import React, { useEffect, useRef, useState } from "react";
-import Layout from "../../layout/Layout";
-import logo from "../../assets/receipt/ag_small.png";
 import { IconPrinter } from "@tabler/icons-react";
-import ReactToPrint from "react-to-print";
-import { useParams } from "react-router-dom";
-import toast from "react-hot-toast";
 import axios from "axios";
-import BASE_URL, { ImagePath, NoImagePath } from "../../base/BaseUrl";
 import moment from "moment";
+import { useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
+import { useParams } from "react-router-dom";
+import { useReactToPrint } from "react-to-print";
+import logo from "../../assets/receipt/ag_small.png";
 import view from "../../assets/receipt/download.png";
-const printStyles = `
-@media print {
-
-
-
-
-  /* Print content with 20px margin */
-  .print-content {
-    margin: 10px !important; /* Apply 20px margin to the printed content */
-
-    }
-    .print-none{
-    display:none
-    }
-    .print-p{
-    padding:10px !important;
-    }
-.print-font {
-  font-size: 10px !important;
-}
-
-
-
-
-}
-`;
+import BASE_URL, { ImagePath, NoImagePath } from "../../base/BaseUrl";
+import Layout from "../../layout/Layout";
 
 export const ViewNewRegister = () => {
   const printRef = useRef(null);
@@ -42,7 +16,6 @@ export const ViewNewRegister = () => {
   const [data, setData] = useState({});
   const [groom, setGroom] = useState({});
   const [bride, setBride] = useState({});
-
   const getTemplateData = async () => {
     try {
       const res = await axios.get(`${BASE_URL}/panel-fetch-by-id/${id}`, {
@@ -66,6 +39,29 @@ export const ViewNewRegister = () => {
   useEffect(() => {
     getTemplateData();
   }, [id]);
+  const handlePrintPdf = useReactToPrint({
+    content: () => printRef.current,
+    documentTitle: "View",
+    pageStyle: `
+    @page {
+      size: A4 portrait;
+    margin: 0mm;
+    }
+    @media print {
+      body {
+        font-size: 10px;
+        margin: 0mm;
+        padding: 0mm;
+      }
+      table {
+        font-size: 12px;
+      }
+      .print-hide {
+        display: none;
+      }
+    }
+  `,
+  });
 
   const feet = Math.floor(data.profile_height / 12);
   const inches = data.profile_height % 12;
@@ -79,23 +75,19 @@ export const ViewNewRegister = () => {
     : NoImagePath;
   return (
     <Layout>
-      <div className="text-black print-none space-x-4">
-        <ReactToPrint
-          trigger={() => (
-            <button
-              variant="text"
-              className="print-none flex items-center space-x-2 bg-white bg-opacity-50 hover:bg-opacity-70 rounded px-4 py-2 shadow-lg hover:shadow-xl transition-shadow"
-            >
-              <IconPrinter className="text-lg" />
-              <span className="text-lg font-semibold">Print</span>
-            </button>
-          )}
-          content={() => printRef.current}
-        />
+      <div className="text-black flex justify-end mb-4">
+        <button
+          variant="text"
+          className="print-none flex items-center  bg-white bg-opacity-50 hover:bg-opacity-70 rounded px-4 py-2 shadow-lg hover:shadow-xl transition-shadow"
+          onClick={handlePrintPdf}
+        >
+          <IconPrinter className="text-lg" />
+          <span className="text-lg font-semibold">Print</span>
+        </button>
       </div>
       <div
         ref={printRef}
-        className="w-full shadow-2xl rounded-xl print:shadow-none print:rounded-none overflow-hidden"
+        className="w-full shadow-2xl rounded-xl print:shadow-none print:rounded-none overflow-hidden text-[12px] "
       >
         <div className="bg-white p-6">
           {/* //FirstRow */}
@@ -104,7 +96,7 @@ export const ViewNewRegister = () => {
               <img src={logo} alt="Profile" className="h-20 w-20 p-2" />
             </div>
             <div className="flex justify-center items-center w-full">
-              <h1 className="text-md font-bold text-brown-500">
+              <h1 className="font-bold text-brown-500">
                 AGARWAL SAMAJ VIKAS TRUST
               </h1>
             </div>
@@ -113,10 +105,10 @@ export const ViewNewRegister = () => {
             </div>
           </div>
           {/* //second row */}
-          <div className="grid grid-cols-12 gap-2 mt-2">
-            <div className="col-span-9">
+          <div className="grid grid-cols-12 gap-2 mt-2 print:grid-cols-12 print:gap-2">
+            <div className="col-span-9 print:col-span-9">
               <div className="border p-1 bg-blue-50">
-                <h1 className="text-md  font-bold text-brown-500">
+                <h1 className="font-bold text-brown-500">
                   DURGESH BANSAL <span className="ml-3">(Bansak)</span>
                 </h1>
               </div>
@@ -286,7 +278,7 @@ export const ViewNewRegister = () => {
                             Place Your residence after marriage (City/State)
                           </span>
 
-                          <span className="block border-gray-300 text-[14px] mt-[0.23rem]">
+                          <span className="block border-gray-300  mt-[0.23rem]">
                             {data.profile_place_of_resid_after_marriage}
                           </span>
                         </div>
@@ -295,7 +287,7 @@ export const ViewNewRegister = () => {
                             Will you be matching Ganna (Janampatri)?
                           </span>
 
-                          <span className="block border-gray-300 text-[14px] mt-[0.23rem]">
+                          <span className="block border-gray-300  mt-[0.23rem]">
                             {data.profile_will_match_ganna}
                           </span>
                         </div>
@@ -304,7 +296,7 @@ export const ViewNewRegister = () => {
                             Will you marry in the same Gotra?
                           </span>
 
-                          <span className="block border-gray-300 text-[14px] mt-[0.23rem]">
+                          <span className="block border-gray-300  mt-[0.23rem]">
                             {data.profile_will_marry_in_same_gotra}
                           </span>
                         </div>
@@ -313,7 +305,7 @@ export const ViewNewRegister = () => {
                             Are you Manglik?
                           </span>
 
-                          <span className="block border-gray-300 text-[14px] mt-[0.23rem]">
+                          <span className="block border-gray-300  mt-[0.23rem]">
                             {data.profile_will_marry_manglink}
                           </span>
                         </div>
@@ -322,14 +314,14 @@ export const ViewNewRegister = () => {
                             Prospective Spouse can be:
                           </span>
 
-                          <span className="block border-gray-300 text-[14px] mt-[0.23rem]">
+                          <span className="block border-gray-300  mt-[0.23rem]">
                             Older by - {data.profile_spouse_can_be_older_by} Yrs
                           </span>
                         </div>
                         <div className="grid grid-cols-2 border-b">
                           <span className="block border-gray-300 h-[21px]"></span>
 
-                          <span className="block border-gray-300 text-[14px] mt-[0.23rem]">
+                          <span className="block border-gray-300  mt-[0.23rem]">
                             Younger by -{data.profile_spouse_can_be_younger_by}{" "}
                             Yrs
                           </span>
@@ -339,7 +331,7 @@ export const ViewNewRegister = () => {
                             Bride will be permitted to work after marriage.
                           </span>
 
-                          <span className="block border-gray-300 text-[14px] mt-[0.23rem]">
+                          <span className="block border-gray-300  mt-[0.23rem]">
                             {
                               data.profile_bride_permitted_to_work_after_marriage
                             }
@@ -350,7 +342,7 @@ export const ViewNewRegister = () => {
                             Expected Budget from Bride:
                           </span>
 
-                          <span className="block border-gray-300 text-[14px] mt-[0.23rem]">
+                          <span className="block border-gray-300  mt-[0.23rem]">
                             {bride.ranges}
                           </span>
                         </div>
@@ -359,7 +351,7 @@ export const ViewNewRegister = () => {
                             Expected Budget from Groom:
                           </span>
 
-                          <span className="block border-gray-300 text-[14px] mt-[0.23rem]">
+                          <span className="block border-gray-300  mt-[0.23rem]">
                             {groom.ranges}
                           </span>
                         </div>
@@ -368,7 +360,7 @@ export const ViewNewRegister = () => {
                             Information (if an )
                           </span>
 
-                          <span className="block border-gray-300 text-[14px] mt-[0.23rem]">
+                          <span className="block border-gray-300  mt-[0.23rem]">
                             {data.brief_father_profession}
                           </span>
                         </div>
@@ -378,7 +370,7 @@ export const ViewNewRegister = () => {
                             <span className="block border-gray-300">
                               Divourse Status
                             </span>
-                            <span className="block border-gray-300 text-[14px] mt-[0.23rem]">
+                            <span className="block border-gray-300  mt-[0.23rem]">
                               {data.profile_divorce_status}
                             </span>
                           </div>
@@ -390,7 +382,7 @@ export const ViewNewRegister = () => {
                               <span className="block border-gray-300">
                                 Children From Prior Marriage
                               </span>
-                              <span className="block border-gray-300 text-[14px] mt-[0.23rem]">
+                              <span className="block border-gray-300  mt-[0.23rem]">
                                 {data.profile_children_num_from_prev_marriage}
                               </span>
                             </div>
@@ -398,7 +390,7 @@ export const ViewNewRegister = () => {
                               <span className="block border-gray-300">
                                 Children With
                               </span>
-                              <span className="block border-gray-300 text-[14px] mt-[0.23rem]">
+                              <span className="block border-gray-300  mt-[0.23rem]">
                                 {data.profile_children_with}
                               </span>
                             </div>
@@ -410,9 +402,9 @@ export const ViewNewRegister = () => {
                 </div>
               </div>
             </div>
-            <div className="col-span-3 space-y-4">
+            <div className="col-span-3 print:col-span-3 space-y-4">
               <div className="border p-1 bg-blue-gray-900">
-                <h1 className="text-md  font-bold text-white">SL No :{id}</h1>
+                <h1 className="font-bold text-white">SL No :{id}</h1>
               </div>
               <div className="space-y-4">
                 <div className="flex text-blue-500 font-semibold gap-2">
@@ -427,18 +419,16 @@ export const ViewNewRegister = () => {
                 </div>
                 <div className="flex text-blue-500 font-semibold gap-2">
                   <span>Place:</span>
-                  <span className="print-font text-sm">
-                    {data.profile_place_of_birth}
-                  </span>
+                  <span>{data.profile_place_of_birth}</span>
                 </div>
                 <div className="flex text-blue-500 font-semibold gap-2">
                   <span>Height:</span>
                   <span>{feet}</span>ft
                   <span>{inches}</span>inches
                 </div>
-                <div className="flex text-blue-500 font-semibold gap-2">
+                <div className="flex text-blue-500 font-semibold">
                   <span>Email:</span>
-                  <span className="text-sm">{data.email}</span>
+                  <span className="break-words">{data.email}</span>
                 </div>
               </div>
               <div>

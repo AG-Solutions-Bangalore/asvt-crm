@@ -47,12 +47,12 @@ const SignIn = () => {
         localStorage.setItem("email", res.data.UserInfo.user.email);
         localStorage.setItem(
           "profile_photo",
-          res.data.UserInfo.user.profile_photo
+          res.data.UserInfo.user.profile_full_face_photo_file_name
         );
-        localStorage.setItem(
-          "profile_mobile",
-          res.data.UserInfo.user.profile_mobile
-        );
+        // localStorage.setItem(
+        //   "profile_mobile",
+        //   res.data.UserInfo.user.profile_mobile
+        // );
         if (token) {
           localStorage.setItem("token", token);
           navigate("/home");
