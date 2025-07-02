@@ -58,7 +58,7 @@ const Header = ({ toggleMobileSidebar, toggleSidebar }) => {
     color: theme.palette.text.secondary,
   }));
   return (
-    <AppBarStyled position="sticky" color="default">
+    <AppBarStyled position="sticky" color="default" sx={{mt:2}}>
       <ToolbarStyled>
         <IconButton
           color="inherit"

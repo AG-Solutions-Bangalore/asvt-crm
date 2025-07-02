@@ -402,7 +402,7 @@ const Married = () => {
         <div className="sticky top-0 p-2 mb-4 border-b-2 border-red-800 bg-red-50 rounded-lg flex">
           <h2 className="px-5 text-black text-lg flex items-center gap-2 p-2">
             <IconArrowBack
-              className="w-4 h-4"
+              className="w-5 h-5 cursor-pointer"
               onClick={() => navigate("/married")}
             />
             Edit Married
@@ -477,6 +477,7 @@ const Married = () => {
                               onChange={handleChange}
                               onBlur={handleBlur}
                               className={inputClass}
+                              maxLength={50}
                             />
                           </div>
                           <div>
@@ -488,13 +489,14 @@ const Married = () => {
                               onChange={handleChange}
                               onBlur={handleBlur}
                               className={inputClass}
+                              maxLength={50}
                             />
                           </div>
                         </>
                       )}
 
-                      {(values.profile_profession === "Family Business" ||
-                        values.profile_profession === "Own Business") && (
+                      {(values.profile_profession == "Family Business" ||
+                        values.profile_profession == "Own Business") && (
                         <>
                           <div>
                             <FormLabel>Business Name</FormLabel>
@@ -505,6 +507,7 @@ const Married = () => {
                               onChange={handleChange}
                               onBlur={handleBlur}
                               className={inputClass}
+                              maxLength={50}
                             />
                           </div>
                           <div>
@@ -516,6 +519,7 @@ const Married = () => {
                               onChange={handleChange}
                               onBlur={handleBlur}
                               className={inputClass}
+                              maxLength={50}
                             />
                           </div>
                         </>
@@ -530,6 +534,7 @@ const Married = () => {
                             onChange={handleChange}
                             onBlur={handleBlur}
                             className={inputClass}
+                            maxLength={50}
                           />
                         </div>
                       )}
@@ -552,7 +557,7 @@ const Married = () => {
                               value={
                                 values.profile_profession_annual_net_income
                               }
-                              maxLength="1"
+                              maxLength={2}
                               onChange={(e) => {
                                 let value = e.target.value;
                                 value = value.replace(/[^0-9]/g, "");
@@ -639,6 +644,7 @@ const Married = () => {
                           onChange={handleChange}
                           onBlur={handleBlur}
                           className={inputClass}
+                          maxLength={50}
                         />
                       </div>
                       <div>
@@ -646,7 +652,7 @@ const Married = () => {
                         <Field
                           type="text"
                           as="input"
-                          maxLength="10"
+                          maxLength={10}
                           name="profile_alternate_contact_num"
                           value={values.profile_alternate_contact_num}
                           onChange={(e) => {
@@ -678,7 +684,7 @@ const Married = () => {
                           onBlur={handleBlur}
                           className={`${inputClass} resize-none overflow-y-auto`}
                           rows="2"
-                          // required
+                          maxLength={500}
                         />
                         <ErrorMessage
                           name="profile_current_resid_address"
@@ -702,9 +708,8 @@ const Married = () => {
                                 value,
                               },
                             });
-
-                            console.log(value, "main cn");
                           }}
+                          maxLength={2}
                           onBlur={handleBlur}
                           className={inputClass}
                           inputMode="numeric"
@@ -1109,6 +1114,7 @@ const Married = () => {
                           onChange={handleChange}
                           onBlur={handleBlur}
                           className={inputClass}
+                          maxLength={50}
                         />
                       </div>
                     </div>
@@ -1125,7 +1131,7 @@ const Married = () => {
                           onBlur={handleBlur}
                           className={`${inputClass} resize-none overflow-y-auto`} // resize-y will allow vertical resizing
                           rows="2"
-                          // required
+                          maxLength={500}
                         />
                         <ErrorMessage
                           name="brief_father_profession"
@@ -1229,6 +1235,7 @@ const Married = () => {
                           onBlur={handleBlur}
                           className={inputClass}
                           inputMode="numeric"
+                          maxLength={10}
                         />
                       </div>
                       <div>
@@ -1261,6 +1268,7 @@ const Married = () => {
                           onChange={handleChange}
                           onBlur={handleBlur}
                           className={inputClass}
+                          maxLength={50}
                         />
                       </div>
                       <div>

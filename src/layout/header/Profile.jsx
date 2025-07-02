@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Avatar,
   Box,
@@ -34,8 +34,8 @@ const Profile = () => {
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [openDialog1, setOpenDialog1] = useState(false);
-  const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+  const [imagePath, setImagePath] = useState(NoImagePath);
+
   const [settings, setSettings] = useState({
     social_whatsapp: false,
     social_email: false,
@@ -155,13 +155,20 @@ const Profile = () => {
       {required && <span className="text-red-500 ml-1">*</span>}
     </label>
   );
-
+  useEffect(() => {
+    const profilePhoto = localStorage.getItem("profile_photo");
+    if (profilePhoto) {
+      setImagePath(`${ImagePath}${profilePhoto}`);
+    } else {
+      setImagePath(NoImagePath);
+    }
+  }, []);
   const inputClass =
     "w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-red-800 border-red-800";
 
-  const profilePhoto = localStorage.getItem("profile_photo");
-  const imagePath = profilePhoto ? `${ImagePath}${profilePhoto}` : NoImagePath;
-
+  // const profilePhoto = localStorage.getItem("profile_photo");
+  // const imagePath = profilePhoto ? `${ImagePath}${profilePhoto}` : NoImagePath;
+  // console.log("Profile");
   return (
     <Box>
       <Tooltip label="Profile" position="top" withArrow>
@@ -178,7 +185,7 @@ const Profile = () => {
           }}
           onClick={handleClick2}
         >
-          <Avatar
+          {/* <Avatar
             src={imagePath}
             alt="image"
             sx={{
@@ -186,6 +193,11 @@ const Profile = () => {
               height: 35,
               padding: "4px",
             }}
+          /> */}
+          <Avatar
+            src={imagePath}
+            alt="Profile"
+            sx={{ width: 35, height: 35, padding: "4px" }}
           />
         </IconButton>
       </Tooltip>
