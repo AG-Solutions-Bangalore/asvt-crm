@@ -8,6 +8,7 @@ import { Button } from "@material-tailwind/react";
 import { useNavigate } from "react-router-dom";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import { IconArrowBack } from "@tabler/icons-react";
 
 const validationSchema = Yup.object({
   notification_heading: Yup.string().required("Heading is required"),
@@ -62,7 +63,10 @@ const CreateNotification = () => {
       <div className="bg-white p-4 rounded-lg">
         <div className="sticky top-0 p-2 mb-4 border-b-2 border-red-800 bg-red-50 rounded-lg flex">
           <h2 className="px-5 text-black text-lg flex items-center gap-2 p-2">
-            <IconInfoCircle className="w-4 h-4" />
+            <IconArrowBack
+              className="w-5 h-5 cursor-pointer"
+              onClick={() => navigate("/notification")}
+            />{" "}
             Create Notification
           </h2>
         </div>
@@ -101,7 +105,11 @@ const CreateNotification = () => {
 
                   <div>
                     <FormLabel required>Notification Heading</FormLabel>
-                    <Field name="notification_heading" className={inputClass} />
+                    <Field
+                      name="notification_heading"
+                      className={inputClass}
+                      maxLength={50}
+                    />
                     <ErrorMessage
                       name="notification_heading"
                       component="div"
@@ -130,6 +138,7 @@ const CreateNotification = () => {
                       name="notification_des"
                       className={`${inputClass} resize-y`}
                       rows="6"
+                      maxLength={500}
                     />
                     <ErrorMessage
                       name="notification_des"

@@ -15,6 +15,7 @@ import * as Yup from "yup";
 import SelectInput from "../../components/common/SelectInput";
 import { Tab, Tabs } from "@mui/material";
 import SelectInputOne from "../../components/common/SelectInputOne";
+import { IconArrowBack } from "@tabler/icons-react";
 
 const validationSchema = Yup.object({
   //new
@@ -431,10 +432,10 @@ const NewRegister = () => {
     );
 
     // if (values.fullPhoto) {
-      formData.append("fullPhoto", values.profile_full_length_photo);
+    formData.append("fullPhoto", values.profile_full_length_photo);
     // }
     // if (values.facePhoto) {
-      formData.append("facePhoto", values.profile_full_face_photo_file_name);
+    formData.append("facePhoto", values.profile_full_face_photo_file_name);
     // }
 
     formData.append("payment_amount", values.payment_amount || "");
@@ -657,7 +658,10 @@ const NewRegister = () => {
       <div className="bg-white p-4 rounded-lg">
         <div className="sticky top-0 p-2 mb-4 border-b-2 border-red-800 bg-red-50 rounded-lg flex">
           <h2 className="px-5 text-black text-lg flex items-center gap-2 p-2">
-            <IconInfoCircle className="w-4 h-4" />
+            <IconArrowBack
+              className="w-5 h-5 cursor-pointer"
+              onClick={() => navigate("/newregister")}
+            />{" "}
             Edit NewRegister
           </h2>
 
@@ -718,6 +722,7 @@ const NewRegister = () => {
                           onChange={handleChange}
                           onBlur={handleBlur}
                           className={inputClass}
+                          maxLength={50}
                         />
                         <ErrorMessage
                           name="profile_first_name"
@@ -821,6 +826,7 @@ const NewRegister = () => {
                           onChange={handleChange}
                           onBlur={handleBlur}
                           className={inputClass}
+                          maxLength={50}
                         />
                         <ErrorMessage
                           name="profile_place_of_birth"
@@ -837,6 +843,7 @@ const NewRegister = () => {
                           onChange={handleChange}
                           onBlur={handleBlur}
                           className={inputClass}
+                          maxLength={50}
                         />
                         <ErrorMessage
                           name="email"
@@ -871,6 +878,7 @@ const NewRegister = () => {
                               onChange={handleChange}
                               onBlur={handleBlur}
                               className={inputClass}
+                              maxLength={50}
                             />
                           </div>
                         </>
@@ -900,6 +908,7 @@ const NewRegister = () => {
                               onChange={handleChange}
                               onBlur={handleBlur}
                               className={inputClass}
+                              maxLength={50}
                             />
                           </div>
                           <div>
@@ -911,6 +920,7 @@ const NewRegister = () => {
                               onChange={handleChange}
                               onBlur={handleBlur}
                               className={inputClass}
+                              maxLength={50}
                             />
                           </div>
                         </>
@@ -927,6 +937,7 @@ const NewRegister = () => {
                               onChange={handleChange}
                               onBlur={handleBlur}
                               className={inputClass}
+                              maxLength={50}
                             />
                           </div>
                           <div>
@@ -938,6 +949,7 @@ const NewRegister = () => {
                               onChange={handleChange}
                               onBlur={handleBlur}
                               className={inputClass}
+                              maxLength={50}
                             />
                           </div>
                         </>
@@ -953,6 +965,7 @@ const NewRegister = () => {
                               onChange={handleChange}
                               onBlur={handleBlur}
                               className={inputClass}
+                              maxLength={50}
                             />
                           </div>
                         </>
@@ -977,7 +990,7 @@ const NewRegister = () => {
                               value={
                                 values.profile_profession_annual_net_income
                               }
-                              maxLength="1"
+                              maxLength="2"
                               onChange={(e) => {
                                 let value = e.target.value;
                                 value = value.replace(/[^0-9]/g, "");
@@ -1121,6 +1134,7 @@ const NewRegister = () => {
                           onChange={handleChange}
                           onBlur={handleBlur}
                           className={inputClass}
+                          maxLength={50}
                         />
                         <ErrorMessage
                           name="profile_father_full_name"
@@ -1137,6 +1151,7 @@ const NewRegister = () => {
                           onChange={handleChange}
                           onBlur={handleBlur}
                           className={inputClass}
+                          maxLength={50}
                         />
                         <ErrorMessage
                           name="profile_mother_full_name"
@@ -1208,6 +1223,7 @@ const NewRegister = () => {
                           onChange={handleChange}
                           onBlur={handleBlur}
                           className={inputClass}
+                          maxLength={50}
                         />
                       </div>
                       <div>
@@ -1244,6 +1260,7 @@ const NewRegister = () => {
                           onChange={handleChange}
                           onBlur={handleBlur}
                           className={inputClass}
+                          maxLength={50}
                         />
                       </div>
                       <div>
@@ -1283,7 +1300,7 @@ const NewRegister = () => {
                           onBlur={handleBlur}
                           className={`${inputClass} resize-none overflow-y-auto`} // resize-y will allow vertical resizing
                           rows="2"
-                          // required
+                          maxLength={500}
                         />
                         <ErrorMessage
                           name="profile_current_resid_address"
@@ -1313,6 +1330,7 @@ const NewRegister = () => {
                           onBlur={handleBlur}
                           className={inputClass}
                           inputMode="numeric"
+                          maxLength={2}
                         />
                         <ErrorMessage
                           name="profile_num_of_years_at_this_address"
@@ -1712,6 +1730,7 @@ const NewRegister = () => {
                           onChange={handleChange}
                           onBlur={handleBlur}
                           className={inputClass}
+                          maxLength={50}
                         />
                       </div>
                     </div>
@@ -1728,7 +1747,7 @@ const NewRegister = () => {
                           onBlur={handleBlur}
                           className={`${inputClass} resize-none overflow-y-auto`} // resize-y will allow vertical resizing
                           rows="2"
-                          // required
+                          maxLength={500}
                         />
                         <ErrorMessage
                           name="brief_father_profession"
@@ -1832,6 +1851,7 @@ const NewRegister = () => {
                           onBlur={handleBlur}
                           className={inputClass}
                           inputMode="numeric"
+                          maxLength={10}
                         />
                       </div>
                       <div>
@@ -1866,7 +1886,7 @@ const NewRegister = () => {
                           onChange={handleChange}
                           onBlur={handleBlur}
                           className={inputClass}
-                          // required
+                          maxLength={50}
                         />
                       </div>
                       <div>
