@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
 import { useReactToPrint } from "react-to-print";
-import logo from "../../assets/receipt/ag_small.png";
+import logo from "../../assets/receipt/ag_logo.png";
 import view from "../../assets/receipt/download.png";
 import BASE_URL, { ImagePath, NoImagePath } from "../../base/BaseUrl";
 import Layout from "../../layout/Layout";
@@ -87,29 +87,27 @@ export const ViewNewRegister = () => {
       </div>
       <div
         ref={printRef}
-        className="w-full shadow-2xl rounded-xl print:shadow-none print:rounded-none overflow-hidden text-[12px] "
+        className="w-full shadow-2xl rounded-xl print:shadow-none print:rounded-none overflow-hidden text-[14px] "
       >
         <div className="bg-white p-6">
           {/* //FirstRow */}
-          <div className="grid grid-cols-3 gap-3 border-b-4 border-brown-600">
+          <div className="border-b-4 border-[#c56723]">
             <div>
-              <img src={logo} alt="Profile" className="h-20 w-20 p-2" />
+              <img src={logo} alt="Profile" className="h-20 w-auto p-2" />
             </div>
-            <div className="flex justify-center items-center w-full">
+            {/* <div className="flex justify-center items-center w-full">
               <h1 className="font-bold text-brown-500">
                 AGARWAL SAMAJ VIKAS TRUST
               </h1>
-            </div>
-            <div className="flex justify-end">
-              <img src={logo} alt="Profile" className=" w-20 h-20  p-2" />
-            </div>
+            </div> */}
           </div>
-          {/* //second row */}
-          <div className="grid grid-cols-12 gap-2 mt-2 print:grid-cols-12 print:gap-2">
+
+          <div className="grid grid-cols-12 gap-2 mt-2 print:grid-cols-12 print:gap-2 ">
             <div className="col-span-9 print:col-span-9">
-              <div className="border p-1 bg-blue-50">
-                <h1 className="font-bold text-brown-500">
-                  DURGESH BANSAL <span className="ml-3">(Bansak)</span>
+              <div className="border p-1 bg-[#c56723] text-[16px]">
+                <h1 className="font-bold text-white">
+                  {data?.profile_first_name || ""}{" "}
+                  <span className="ml-3">({data.profile_gotra || ""})</span>
                 </h1>
               </div>
 
@@ -129,37 +127,37 @@ export const ViewNewRegister = () => {
                     }}
                   ></div>
                 )}
-                <div className="flex text-blue-500 font-normal gap-2 border-b mt-2">
+                <div className="flex  font-normal gap-2 border-b mt-2">
                   <span>Qualification</span>:
                   <span>{data.profile_education_qualification}</span>
                 </div>
-                <div className="flex text-blue-500 font-normal gap-2 border-b ">
+                <div className="flex  font-normal gap-2 border-b ">
                   <span>Profession</span>:<span>{data.profile_profession}</span>
                 </div>
-                <div className="flex text-blue-500 font-normal gap-2 border-b ">
+                <div className="flex  font-normal gap-2 border-b ">
                   <span>Business/Company Name</span>
                   <span>{data.profile_profession_org_name}</span>
                 </div>
-                <div className="flex text-blue-500 font-normal gap-2 border-b">
+                <div className="flex  font-normal gap-2 border-b">
                   <span>Business/Company Type</span>
                   <span>{data.profile_profession_org_type}</span>
                 </div>
-                <div className="flex text-blue-500 font-normal gap-2 border-b ">
+                <div className="flex  font-normal gap-2 border-b ">
                   <span>Annual Net Income</span>
                   <span>{data.profile_profession_annual_net_income}</span>
                 </div>
               </div>
 
               <div className="col-span-9">
-                <div className="border p-1 bg-blue-50">
+                <div className="border p-1 bg-[#c56723]">
                   <div className="grid grid-cols-2 gap-2">
-                    <h1 className="text-md font-bold text-brown-500">
+                    <h1 className="text-md font-bold text-white">
                       About Family <span className="ml-3">-</span>
                       <span className="ml-3">Any Community</span>
                     </h1>
                     <div className="flex justify-end gap-4 items-end">
-                      <div className="text-xs text-blue-400">Married</div>
-                      <div className="text-xs text-blue-400">UnMarried</div>
+                      <div className="text-xs text-white">Married</div>
+                      <div className="text-xs text-white">UnMarried</div>
                     </div>
                   </div>
                 </div>
@@ -168,7 +166,7 @@ export const ViewNewRegister = () => {
                   <div className="grid grid-cols-12 gap-6">
                     {/* <!-- Left Section --> */}
                     <div className="col-span-8 space-y-3">
-                      <div className="grid grid-cols-2 text-blue-500 font-normal border-b mt-2">
+                      <div className="grid grid-cols-2  font-normal border-b mt-2">
                         <span>Father's Name</span>
                         <span>
                           :
@@ -177,7 +175,7 @@ export const ViewNewRegister = () => {
                           </span>
                         </span>{" "}
                       </div>
-                      <div className="grid grid-cols-2 text-blue-500 font-normal border-b">
+                      <div className="grid grid-cols-2  font-normal border-b">
                         <span>Mother's Name</span>
                         <span>
                           :
@@ -190,7 +188,7 @@ export const ViewNewRegister = () => {
                     {/* 
   <!-- Right Section --> */}
                     <div className="col-span-4 space-y-3">
-                      <div className="grid grid-cols-3 text-blue-500 font-normal mt-2 gap-4">
+                      <div className="grid grid-cols-3  font-normal mt-2 gap-4">
                         <span>Brother's</span>
                         <span className="flex justify-end items-end">
                           <span>{data.profile_married_brother}</span>
@@ -200,7 +198,7 @@ export const ViewNewRegister = () => {
                           <span>{data.profile_unmarried_brother}</span>
                         </span>
                       </div>
-                      <div className="grid grid-cols-3 text-blue-500 font-normal mt-2 gap-4">
+                      <div className="grid grid-cols-3  font-normal mt-2 gap-4">
                         <span>Sister's</span>
                         <span className="flex justify-end items-end">
                           <span>{data.profile_married_sister}</span>
@@ -213,29 +211,29 @@ export const ViewNewRegister = () => {
                   </div>
 
                   <div className="grid grid-cols-2 ">
-                    <div className="flex text-blue-500 font-normal gap-2 border-b ">
+                    <div className="flex  font-normal gap-2 border-b ">
                       <span>Main Contact </span>:
                       <span>{data.profile_main_contact_full_name}</span>
                     </div>
-                    <div className=" text-blue-500 font-normal gap-2 border-b text-center">
+                    <div className="  font-normal gap-2 border-b text-center">
                       <span>No </span>:
                       <span>{data.profile_main_contact_num}</span>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 ">
-                    <div className="flex text-blue-500 font-normal gap-2 border-b ">
+                    <div className="flex  font-normal gap-2 border-b ">
                       <span>Alternate</span>:
                       <span>{data.profile_alternate_contact_full_name}</span>
                     </div>
-                    <div className=" text-blue-500 font-normal gap-2 border-b text-center">
+                    <div className="  font-normal gap-2 border-b text-center">
                       <span>No </span>:
                       <span>{data.profile_alternate_contact_num}</span>
                     </div>
                   </div>
                   <div className="grid grid-cols-12">
                     <div className="col-span-9 border-b">
-                      <div className=" text-blue-500 font-normal gap-2  text-start ">
+                      <div className="  font-normal gap-2  text-start ">
                         <span>{data.profile_current_resid_address}</span>
                       </div>
                     </div>
@@ -243,17 +241,17 @@ export const ViewNewRegister = () => {
                     <div className="col-span-3">
                       {" "}
                       <div className="flex justify-between">
-                        <div className=" text-blue-500 font-medium   text-center ">
+                        <div className="  font-medium   text-center ">
                           <span className="border-b font-normal">
                             Rented/Own
                           </span>
-                          <div className=" text-blue-500  border-b text-center mt-1 font-normal">
+                          <div className="   border-b text-center mt-1 font-normal">
                             <span>{data.profile_house_type}</span>{" "}
                           </div>
                         </div>
-                        <div className=" text-blue-500 font-normal   text-center ">
+                        <div className="  font-normal   text-center ">
                           <span className="border-b">Years</span>
-                          <div className=" text-blue-500 font-normal border-b text-center mt-1">
+                          <div className="  font-normal border-b text-center mt-1">
                             <span>
                               {data.profile_num_of_years_at_this_address}
                             </span>
@@ -264,14 +262,14 @@ export const ViewNewRegister = () => {
                   </div>
                 </div>
                 <div className="col-span-9">
-                  <div className="border p-1 bg-blue-50">
-                    <h1 className="text-md  font-bold text-brown-500">
+                  <div className="border p-1 bg-[#c56723] ">
+                    <h1 className="text-md  font-bold text-white">
                       PARTNER PREFERENECE
                     </h1>
                   </div>
 
                   <div>
-                    <div className="mt-2 text-blue-500 font-normal">
+                    <div className="mt-2  font-normal">
                       <div className=" text-start space-y-2">
                         <div className="grid grid-cols-2 border-b">
                           <span className="block border-gray-300">
@@ -355,9 +353,9 @@ export const ViewNewRegister = () => {
                             {groom.ranges}
                           </span>
                         </div>
-                        <div className="grid grid-cols-2 border-b">
+                        <div className="border-b">
                           <span className="block border-gray-300">
-                            Information (if an )
+                            Information (if an ) :
                           </span>
 
                           <span className="block border-gray-300  mt-[0.23rem]">
@@ -403,45 +401,39 @@ export const ViewNewRegister = () => {
               </div>
             </div>
             <div className="col-span-3 print:col-span-3 space-y-4">
-              <div className="border p-1 bg-blue-gray-900">
+              <div className="border p-1 bg-[#c56723] text-[16px]">
                 <h1 className="font-bold text-white">SL No :{id}</h1>
               </div>
               <div className="space-y-4">
-                <div className="flex text-blue-500 font-semibold gap-2">
+                <div className="flex  font-semibold gap-2">
                   <span>D.O.B:</span>
                   <span>
                     {moment(data.profile_date_of_birth).format("DD-MMM-YYYY")}
                   </span>
                 </div>
-                <div className="flex text-blue-500 font-semibold gap-2">
+                <div className="flex  font-semibold gap-2">
                   <span>T.O.B:</span>
                   <span>{data.profile_time_of_birth}</span>
                 </div>
-                <div className="flex text-blue-500 font-semibold gap-2">
+                <div className="flex  font-semibold gap-2">
                   <span>Place:</span>
                   <span>{data.profile_place_of_birth}</span>
                 </div>
-                <div className="flex text-blue-500 font-semibold gap-2">
+                <div className="flex  font-semibold gap-2">
                   <span>Height:</span>
                   <span>{feet}</span>ft
                   <span>{inches}</span>inches
                 </div>
-                <div className="flex text-blue-500 font-semibold">
+                <div className="flex flex-wrap capitalize  font-semibold gap-1 w-full">
                   <span>Email:</span>
-                  <span className="break-words">{data.email}</span>
+                  <span className="break-all lowercase">{data.email}</span>
                 </div>
               </div>
               <div>
-                <img
-                  src={imagePath1}
-                  className="w-[15rem] h-[25rem] rounded-md"
-                />
+                <img src={imagePath1} className="w-[15rem] h-auto rounded-md" />
               </div>
               <div>
-                <img
-                  src={imagePath}
-                  className="w-[15rem] h-[15rem] rounded-md"
-                />
+                <img src={imagePath} className="w-[15rem] h-auto rounded-md" />
               </div>
             </div>
           </div>
