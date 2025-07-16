@@ -220,7 +220,7 @@ const Female = () => {
         size: 50,
         enableHiding: false,
         Cell: ({ row }) => (
-          <Flex gap="xs">
+          <Flex gap="xs" align="center" justify="center">
             <Tooltip label="Email" position="top" withArrow>
               <Checkbox
                 className="w-4 h-4"
@@ -230,24 +230,26 @@ const Female = () => {
                 onChange={(e) => handleCheckBoxChange(e, row.original.id)}
               />
             </Tooltip>
+
             <Tooltip label="View" position="top" withArrow>
               <IconEye
+                // size={20}
                 className="cursor-pointer text-blue-600 hover:text-blue-800"
-                onClick={() => {
-                  navigate(`/female/view/${row.original.id}`);
-                }}
+                onClick={() => navigate(`/female/view/${row.original.id}`)}
               />
             </Tooltip>
+
             <Tooltip label="Edit" position="top" withArrow>
               <IconEdit
+                // size={18}
                 className="cursor-pointer text-blue-600 hover:text-blue-800"
-                onClick={() => {
-                  navigate(`/female/edit/${row.original.id}`);
-                }}
+                onClick={() => navigate(`/female/edit/${row.original.id}`)}
               />
             </Tooltip>
+
             <Tooltip label="Deactivation" position="top" withArrow>
               <IconRadioactive
+                // size={18}
                 className="cursor-pointer text-blue-600 hover:text-blue-800"
                 onClick={() => handleOpenDialog(row.original.id)}
               />
@@ -255,6 +257,7 @@ const Female = () => {
 
             <Tooltip label="Reset" position="top" withArrow>
               <IconRefresh
+                // size={18}
                 className="cursor-pointer text-blue-600 hover:text-blue-800"
                 onClick={() => handleOpenDialog1(row.original.id)}
               />
