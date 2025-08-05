@@ -14,6 +14,7 @@ import { IconEdit } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
 import { ImagePath, NoImagePath } from "../../base/BaseUrl";
 import moment from "moment";
+import ProfileImageCell from "../../components/common/ProfileImageCell";
 const Notification = () => {
   const [notification, setNotification] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -46,6 +47,63 @@ const Notification = () => {
 
   const columns = useMemo(
     () => [
+      // {
+      //   accessorKey: "notification_image",
+      //   header: "Profile Photo",
+      //   size: 150,
+      //   Cell: ({ row }) => {
+      //     const profilePhoto = row.original.notification_image;
+      //     const imagePath = profilePhoto
+      //       ? `${NotificationPath}${profilePhoto}?t=${RandomValue}`
+      //       : NoImagePath;
+      //     const [loading, setLoading] = useState(true);
+
+      //     return (
+      //       <div
+      //         style={{ position: "relative", width: "50px", height: "50px" }}
+      //       >
+      //         {loading && (
+      //           <div
+      //             style={{
+      //               position: "absolute",
+      //               top: 0,
+      //               left: 0,
+      //               width: "100%",
+      //               height: "100%",
+      //               display: "flex",
+      //               alignItems: "center",
+      //               justifyContent: "center",
+      //             }}
+      //           >
+      //             {/* Simple loader */}
+      //             <div
+      //               style={{
+      //                 width: "20px",
+      //                 height: "20px",
+      //                 border: "2px solid rgba(0, 0, 0, 0.1)",
+      //                 borderTop: "2px solid #4F46E5",
+      //                 borderRadius: "50%",
+      //                 animation: "spin 1s linear infinite",
+      //               }}
+      //             />
+      //           </div>
+      //         )}
+      //         <img
+      //           src={imagePath}
+      //           alt={profilePhoto ? "Profile" : "No Profile"}
+      //           style={{
+      //             width: "50px",
+      //             height: "50px",
+      //             borderRadius: "50%",
+      //             objectFit: "cover",
+      //             display: loading ? "none" : "block",
+      //           }}
+      //           onLoad={() => setLoading(false)}
+      //         />
+      //       </div>
+      //     );
+      //   },
+      // },
       {
         accessorKey: "notification_image",
         header: "Profile Photo",
@@ -55,55 +113,23 @@ const Notification = () => {
           const imagePath = profilePhoto
             ? `${NotificationPath}${profilePhoto}?t=${RandomValue}`
             : NoImagePath;
-          const [loading, setLoading] = useState(true);
 
           return (
-            <div
-              style={{ position: "relative", width: "50px", height: "50px" }}
-            >
-              {loading && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    width: "100%",
-                    height: "100%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  {/* Simple loader */}
-                  <div
-                    style={{
-                      width: "20px",
-                      height: "20px",
-                      border: "2px solid rgba(0, 0, 0, 0.1)",
-                      borderTop: "2px solid #4F46E5",
-                      borderRadius: "50%",
-                      animation: "spin 1s linear infinite",
-                    }}
-                  />
-                </div>
-              )}
-              <img
-                src={imagePath}
-                alt={profilePhoto ? "Profile" : "No Profile"}
-                style={{
-                  width: "50px",
-                  height: "50px",
-                  borderRadius: "50%",
-                  objectFit: "cover",
-                  display: loading ? "none" : "block",
-                }}
-                onLoad={() => setLoading(false)}
-              />
-            </div>
+            <ProfileImageCell
+              imageUrl={imagePath}
+              alt={profilePhoto ? "Profile" : "No Profile"}
+            />
           );
         },
       },
-
+      {
+        accessorKey: "id",
+        header: "Profile Id",
+        size: 50,
+        Cell: ({ row }) => {
+          return <span>{row.original.id || ""}</span>;
+        },
+      },
       {
         accessorKey: "notification_date",
         header: "Notification Date",

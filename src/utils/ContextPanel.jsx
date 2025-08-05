@@ -43,6 +43,7 @@ const AppProvider = ({ children }) => {
           "/married",
           "/male",
           "/female",
+          "/no-image",
           "/validity",
           "/newregister/edit",
           "/newregister/view",

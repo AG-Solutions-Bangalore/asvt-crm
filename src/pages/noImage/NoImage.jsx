@@ -1,61 +1,54 @@
 import {
-  Box,
-  Button,
-  Center,
-  Flex,
-  Loader,
-  Text,
-  Tooltip,
+    Box,
+    Button,
+    Center,
+    Flex,
+    Loader,
+    Text,
+    Tooltip,
 } from "@mantine/core";
 import {
-  IconCircleX,
-  IconEdit,
-  IconEye,
-  IconPhoto,
-  IconRadioactive,
+    IconCircleX
 } from "@tabler/icons-react";
 import axios from "axios";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import {
-  MantineReactTable,
-  MRT_GlobalFilterTextInput,
-  MRT_ToggleFiltersButton,
-  useMantineReactTable,
+    MantineReactTable,
+    MRT_GlobalFilterTextInput,
+    MRT_ToggleFiltersButton,
+    useMantineReactTable,
 } from "mantine-react-table";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
-import BASE_URL, { ImagePath, NoImagePath } from "../../base/BaseUrl";
+import BASE_URL, { NoImagePath } from "../../base/BaseUrl";
 import descriptionData from "../../json/emailjson.json";
 import Layout from "../../layout/Layout";
 
 import { Checkbox } from "@material-tailwind/react";
 import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Slide,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    Slide,
 } from "@mui/material";
-import { IconRefresh } from "@tabler/icons-react";
+import { IconPhoto } from "@tabler/icons-react";
 import toast from "react-hot-toast";
 import ProfileImageCell from "../../components/common/ProfileImageCell";
 const validationSchemaEmail = Yup.object({
   description_message: Yup.string().required("Description is Required"),
 });
-const Male = () => {
-  const [male, setMale] = useState([]);
+const NoImage = () => {
+  const [noimage, setNoImage] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [openDialog1, setOpenDialog1] = useState(false);
-  const [postId, setPostId] = useState(null);
-  const [openDialog, setOpenDialog] = useState(false);
-  const [openNoImageDialog, setOpenNoImageDialog] = useState(false);
-  const [noimageId, setNoImageId] = useState(null);
-  const [postId1, setPostId1] = useState(null);
+
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [emailCheckDialog, setEmailCheckDialog] = useState(false);
   const [isButtonDisabledEmail, setIsButtonDisabledEmail] = useState(false);
+  const [openNoImageDialog, setOpenNoImageDialog] = useState(false);
+  const [noimageId, setNoImageId] = useState(null);
   const [emailCheck, setEmailCheck] = useState({
     user_data: [],
     description_message: descriptionData?.description,
@@ -69,35 +62,27 @@ const Male = () => {
     });
   };
   const navigate = useNavigate();
-  const fetchMaleData = async () => {
+  const fetchNoImageData = async () => {
     setIsLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get(`${BASE_URL}/panel-fetch-male`, {
+      const response = await axios.get(`${BASE_URL}/panel-fetch-no-image`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      setMale(response.data?.user || []);
+      setNoImage(response.data?.user || []);
     } catch (error) {
       console.error("Error fetching template data:", error);
     } finally {
       setIsLoading(false);
     }
   };
-  const handleOpenDialog = (id) => {
-    setPostId(id);
-    setOpenDialog1(true);
-  };
 
-  const handleCloseDialog = () => {
-    setOpenDialog1(false);
-    setPostId(null);
-  };
-  const handleOpenDialog1 = (id) => {
-    setPostId1(id);
-    setOpenDialog(true);
-  };
+  useEffect(() => {
+    fetchNoImageData();
+  }, []);
+
   const handleNoImageDialog = (id) => {
     setNoImageId(id);
     setOpenNoImageDialog(true);
@@ -107,111 +92,14 @@ const Male = () => {
     setOpenNoImageDialog(false);
   };
 
-  const handleCloseDialog1 = () => {
-    setOpenDialog(false);
-    setPostId1(null);
-  };
-  const onSubmit = async () => {
-    setIsButtonDisabled(true);
-    const token = localStorage.getItem("token");
-
-    try {
-      await axios.put(
-        `${BASE_URL}/panel-update-deactivation/${postId}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      toast.success("Deactivated successfully");
-      handleCloseDialog();
-      fetchMaleData();
-    } catch (error) {
-      toast.error(" error deactivated");
-      console.error(error);
-    } finally {
-      setIsButtonDisabled(false);
-    }
-  };
-  const onSubmit1 = async () => {
-    setIsButtonDisabled(true);
-    const token = localStorage.getItem("token");
-
-    try {
-      await axios.put(
-        `${BASE_URL}/panel-update-reset-device/${postId1}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      toast.success("Reset successfully");
-      handleCloseDialog1();
-    } catch (error) {
-      toast.error(" error on  Reset");
-      console.error(error);
-    } finally {
-      setIsButtonDisabled(false);
-    }
-  };
-  const onNoImageSubmit = async () => {
-    setIsButtonDisabled(true);
-    const token = localStorage.getItem("token");
-    try {
-      const respose = await axios.put(
-        `${BASE_URL}/panel-update-activation-no-image/${noimageId}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      console.log(respose, "respose");
-      if (respose.data.code === 200) {
-        toast.success(respose.data.msg || "Profile is Activated");
-        handleCloseNoImageDialog();
-        fetchMaleData();
-      } else {
-        toast.error(respose.data.msg || "Profile is Activated");
-      }
-    } catch (error) {
-      toast.error(error.message || "Error on  Activated");
-      console.error(error);
-    } finally {
-      setIsButtonDisabled(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchMaleData();
-  }, []);
-  const RandomValue = Date.now();
-
   const columns = useMemo(
     () => [
       {
-        accessorKey: "profile_full_face_photo_file_name",
+        accessorKey: "noimage",
         header: "Profile Photo",
         size: 150,
         Cell: ({ row }) => {
-          const profilePhoto = row.original.profile_full_face_photo_file_name;
-          const imagePath = profilePhoto
-            ? `${ImagePath}${profilePhoto}?t=${RandomValue}`
-            : NoImagePath;
-          console.log(`${imagePath}/${profilePhoto}`, "profilePhoto");
-          return (
-            <ProfileImageCell
-              imageUrl={imagePath}
-              alt={profilePhoto ? "Profile" : "No Profile"}
-            />
-          );
+          return <ProfileImageCell imageUrl={NoImagePath} alt="No Profile" />;
         },
       },
       {
@@ -258,13 +146,7 @@ const Male = () => {
         enableHiding: false,
         Cell: ({ row }) => (
           <Flex gap="xs" className="items-center">
-            <Tooltip label="No Image" position="top" withArrow>
-              <IconPhoto
-                className="cursor-pointer text-blue-600 hover:text-blue-800"
-                onClick={() => handleNoImageDialog(row.original.id)}
-              />
-            </Tooltip>
-            <Tooltip label="Email" position="top" withArrow>
+            <Tooltip label="Whatsapp" position="top" withArrow>
               <Checkbox
                 className="w-4 h-4"
                 color="blue"
@@ -273,32 +155,10 @@ const Male = () => {
                 onChange={(e) => handleCheckBoxChange(e, row.original.id)}
               />
             </Tooltip>
-            <Tooltip label="View" position="top" withArrow>
-              <IconEye
+            <Tooltip label="No Image" position="top" withArrow>
+              <IconPhoto
                 className="cursor-pointer text-blue-600 hover:text-blue-800"
-                onClick={() => {
-                  navigate(`/male/view/${row.original.id}`);
-                }}
-              />
-            </Tooltip>
-            <Tooltip label="Edit" position="top" withArrow>
-              <IconEdit
-                className="cursor-pointer text-blue-600 hover:text-blue-800"
-                onClick={() => {
-                  navigate(`/male/edit/${row.original.id}`);
-                }}
-              />
-            </Tooltip>
-            <Tooltip label="Deactivation" position="top" withArrow>
-              <IconRadioactive
-                className="cursor-pointer text-blue-600 hover:text-blue-800"
-                onClick={() => handleOpenDialog(row.original.id)}
-              />
-            </Tooltip>
-            <Tooltip label="Reset" position="top" withArrow>
-              <IconRefresh
-                className="cursor-pointer text-blue-600 hover:text-blue-800"
-                onClick={() => handleOpenDialog1(row.original.id)}
+                onClick={() => handleNoImageDialog(row.original.id)}
               />
             </Tooltip>
           </Flex>
@@ -310,7 +170,7 @@ const Male = () => {
 
   const table = useMantineReactTable({
     columns,
-    data: male,
+    data: noimage,
     enableColumnActions: false,
     enableStickyHeader: true,
     enableStickyFooter: true,
@@ -330,7 +190,7 @@ const Male = () => {
         >
           {" "}
           <Text size="xl" weight={700}>
-            Male
+            No Image
           </Text>
           <Flex gap="sm">
             <MRT_GlobalFilterTextInput table={table} />
@@ -385,7 +245,33 @@ const Male = () => {
       setIsButtonDisabledEmail(false);
     }
   };
-
+  const onNoImageSubmit = async () => {
+    setIsButtonDisabled(true);
+    const token = localStorage.getItem("token");
+    try {
+      const respose = await axios.put(
+        `${BASE_URL}/panel-update-activation-no-image/${noimageId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (respose.data.code === 200) {
+        toast.success(respose.data.msg || "Profile is Activated");
+        handleCloseNoImageDialog();
+        fetchNoImageData();
+      } else {
+        toast.error(respose.data.msg || "Profile is Activated");
+      }
+    } catch (error) {
+      toast.error(error.message || "Error on  Activated");
+      console.error(error);
+    } finally {
+      setIsButtonDisabled(false);
+    }
+  };
   const FormLabel = ({ children, required }) => (
     <label className="block text-sm font-semibold text-black mb-1">
       {children}
@@ -409,113 +295,6 @@ const Male = () => {
           <MantineReactTable table={table} />
         )}
       </Box>
-
-      <Dialog
-        open={openDialog1}
-        onClose={handleCloseDialog}
-        keepMounted
-        aria-describedby="alert-dialog-slide-description"
-        sx={{
-          backdropFilter: "blur(5px) sepia(5%)",
-
-          "& .MuiDialog-paper": {
-            borderRadius: "18px",
-          },
-        }}
-        TransitionComponent={Slide}
-        transitionDuration={500}
-        fullWidth
-        maxWidth="sm"
-      >
-        <DialogTitle
-          sx={{
-            fontSize: "1.5rem",
-            fontWeight: "bold",
-            my: "10px",
-          }}
-        >
-          Confirm Deactivation
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText
-            sx={{
-              fontSize: "15px",
-              my: "10px",
-            }}
-          >
-            Are you sure you want to Deactivation?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <button
-            className="text-center text-sm font-[400] cursor-pointer hover:animate-pulse w-36 text-white bg-red-600 hover:bg-red-400 p-2 rounded-lg shadow-md mr-2"
-            onClick={handleCloseDialog}
-          >
-            <span>No</span>
-          </button>
-          <button
-            className="text-center text-sm font-[400] cursor-pointer hover:animate-pulse w-36 text-white bg-blue-600 hover:bg-green-700 p-2 rounded-lg shadow-md mr-2"
-            onClick={onSubmit}
-            disabled={isButtonDisabled}
-          >
-            {/* <span>Confirm</span> */}
-            {isButtonDisabled ? "Deactivating..." : "Yes"}
-          </button>
-        </DialogActions>
-      </Dialog>
-      {/* //resetdevice */}
-      <Dialog
-        open={openDialog}
-        onClose={handleCloseDialog1}
-        keepMounted
-        aria-describedby="alert-dialog-slide-description"
-        sx={{
-          backdropFilter: "blur(5px) sepia(5%)",
-          "& .MuiDialog-paper": {
-            borderRadius: "18px",
-          },
-        }}
-        TransitionComponent={Slide}
-        transitionDuration={500}
-        fullWidth
-        maxWidth="sm"
-      >
-        <DialogTitle
-          sx={{
-            fontSize: "1.5rem",
-            fontWeight: "bold",
-            my: "10px",
-          }}
-        >
-          Confirm Reset
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText
-            sx={{
-              fontSize: "15px",
-              my: "10px",
-            }}
-          >
-            Are you sure you want to Reset?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <button
-            className="text-center text-sm font-[400] cursor-pointer hover:animate-pulse w-36 text-white bg-red-600 hover:bg-red-400 p-2 rounded-lg shadow-md mr-2"
-            onClick={handleCloseDialog1}
-          >
-            <span>No</span>
-          </button>
-          <button
-            className="text-center text-sm font-[400] cursor-pointer hover:animate-pulse w-36 text-white bg-blue-600 hover:bg-green-700 p-2 rounded-lg shadow-md mr-2"
-            onClick={onSubmit1}
-            disabled={isButtonDisabled}
-          >
-            {/* <span>Confirm</span> */}
-            {isButtonDisabled ? "Resetting..." : "Yes"}
-          </button>
-        </DialogActions>
-      </Dialog>
 
       <Dialog
         open={emailCheckDialog}
@@ -614,7 +393,6 @@ const Male = () => {
         </Formik>
       </Dialog>
 
-      {/* //no image dialog */}
       <Dialog
         open={openNoImageDialog}
         onClose={handleNoImageDialog}
@@ -671,4 +449,4 @@ const Male = () => {
   );
 };
 
-export default Male;
+export default NoImage;
