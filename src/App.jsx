@@ -24,6 +24,7 @@ import CreateNotification from "./pages/Notification/CreateNotification";
 import EditNotification from "./pages/Notification/EditNotification";
 import ViewValidity from "./pages/Validity/ViewValidity";
 import EditValidity from "./pages/Validity/EditValidity";
+import NoImage from "./pages/noImage/NoImage";
 const App = () => {
   return (
     <>
@@ -51,6 +52,7 @@ const App = () => {
         <Route path="/male" element={<Male />} />
         <Route path="/male/edit/:id" element={<EditMale />} />
         <Route path="/male/view/:id" element={<ViewMale />} />
+        <Route path="/no-image" element={<NoImage />} />
         <Route path="/female" element={<Female />} />
         <Route path="/female/edit/:id" element={<EditFemale />} />
         <Route path="/female/view/:id" element={<ViewFemlae />} />

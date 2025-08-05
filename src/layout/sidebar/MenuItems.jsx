@@ -57,6 +57,12 @@ const getMenuItems = (userTypeId) => [
     href: "/female",
   },
   {
+    id: "noimage",
+    title: "No Image",
+    icon: IconWoman,
+    href: "/no-image",
+  },
+  {
     id: "validity",
     title: "Validity",
     icon: IconClockX,

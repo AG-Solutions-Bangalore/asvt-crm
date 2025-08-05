@@ -1,29 +1,36 @@
-import React, { useEffect, useMemo, useState } from "react";
-import Layout from "../../layout/Layout";
-import axios from "axios";
-import BASE_URL from "../../base/BaseUrl";
-import { Tooltip } from "@mantine/core";
 import {
-  MantineReactTable,
-  useMantineReactTable,
-  MRT_GlobalFilterTextInput,
-  MRT_ToggleFiltersButton,
-} from "mantine-react-table";
-import { Box, Button, Center, Flex, Loader, Text } from "@mantine/core";
+  Box,
+  Button,
+  Center,
+  Flex,
+  Loader,
+  Text,
+  Tooltip,
+} from "@mantine/core";
+import { IconButton } from "@material-tailwind/react";
+import { Dialog, Slide } from "@mui/material";
 import {
+  IconCircleX,
   IconEdit,
   IconEye,
-  IconCircleX,
   IconRadioactive,
 } from "@tabler/icons-react";
-import { Dialog, FormLabel, Slide } from "@mui/material";
-import { Formik, Field, Form, ErrorMessage } from "formik";
-import * as Yup from "yup";
-import SelectInput from "../../components/common/SelectInput";
-import { useNavigate } from "react-router-dom";
-import { ImagePath, NoImagePath } from "../../base/BaseUrl";
-import { IconButton } from "@material-tailwind/react";
+import axios from "axios";
+import { ErrorMessage, Field, Form, Formik } from "formik";
+import {
+  MantineReactTable,
+  MRT_GlobalFilterTextInput,
+  MRT_ToggleFiltersButton,
+  useMantineReactTable,
+} from "mantine-react-table";
+import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import * as Yup from "yup";
+import BASE_URL, { ImagePath, NoImagePath } from "../../base/BaseUrl";
+import ProfileImageCell from "../../components/common/ProfileImageCell";
+import SelectInput from "../../components/common/SelectInput";
+import Layout from "../../layout/Layout";
 
 const validationSchema = Yup.object({
   payment_amount: Yup.number().required(" Amount is required"),
@@ -155,6 +162,68 @@ const Married = () => {
 
   const columns = useMemo(
     () => [
+      // {
+      //   accessorKey: "profile_full_face_photo_file_name",
+      //   header: "Profile Photo",
+      //   size: 150,
+      //   Cell: ({ row }) => {
+      //     const profilePhoto = row.original.profile_full_face_photo_file_name;
+      //     const imagePath = profilePhoto
+      //       ? `${ImagePath}${profilePhoto}?t=${RandomValue}`
+      //       : NoImagePath;
+      //     const [loading, setLoading] = useState(true);
+
+      //     return (
+      //       <div
+      //         style={{ position: "relative", width: "50px", height: "50px" }}
+      //       >
+      //         {loading && (
+      //           <div
+      //             style={{
+      //               position: "absolute",
+      //               top: 0,
+      //               left: 0,
+      //               width: "100%",
+      //               height: "100%",
+      //               display: "flex",
+      //               alignItems: "center",
+      //               justifyContent: "center",
+      //             }}
+      //           >
+      //             <div
+      //               style={{
+      //                 width: "20px",
+      //                 height: "20px",
+      //                 border: "2px solid rgba(0, 0, 0, 0.1)",
+      //                 borderTop: "2px solid #4F46E5",
+      //                 borderRadius: "50%",
+      //                 animation: "spin 1s linear infinite",
+      //               }}
+      //             />
+      //           </div>
+      //         )}
+      //         <img
+      //           src={imagePath}
+      //           alt={profilePhoto ? "Profile" : "No Profile"}
+      //           style={{
+      //             width: "50px",
+      //             height: "50px",
+      //             borderRadius: "50%",
+      //             objectFit: "cover",
+      //             display: loading ? "none" : "block",
+      //           }}
+      //           onLoad={() => setLoading(false)}
+      //         />
+      //       </div>
+      //     );
+      //   },
+      // },
+
+      // {
+      //   accessorKey: "id",
+      //   header: "Profile Id",
+      //   size: 50,
+      // },
       {
         accessorKey: "profile_full_face_photo_file_name",
         header: "Profile Photo",
@@ -164,55 +233,23 @@ const Married = () => {
           const imagePath = profilePhoto
             ? `${ImagePath}${profilePhoto}?t=${RandomValue}`
             : NoImagePath;
-          const [loading, setLoading] = useState(true);
 
           return (
-            <div
-              style={{ position: "relative", width: "50px", height: "50px" }}
-            >
-              {loading && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    width: "100%",
-                    height: "100%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  {/* Simple loader */}
-                  <div
-                    style={{
-                      width: "20px",
-                      height: "20px",
-                      border: "2px solid rgba(0, 0, 0, 0.1)",
-                      borderTop: "2px solid #4F46E5",
-                      borderRadius: "50%",
-                      animation: "spin 1s linear infinite",
-                    }}
-                  />
-                </div>
-              )}
-              <img
-                src={imagePath}
-                alt={profilePhoto ? "Profile" : "No Profile"}
-                style={{
-                  width: "50px",
-                  height: "50px",
-                  borderRadius: "50%",
-                  objectFit: "cover",
-                  display: loading ? "none" : "block",
-                }}
-                onLoad={() => setLoading(false)}
-              />
-            </div>
+            <ProfileImageCell
+              imageUrl={imagePath}
+              alt={profilePhoto ? "Profile" : "No Profile"}
+            />
           );
         },
       },
-
+      {
+        accessorKey: "id",
+        header: "Profile Id",
+        size: 50,
+        Cell: ({ row }) => {
+          return <span>{row.original.id || ""}</span>;
+        },
+      },
       {
         accessorKey: "name",
         header: "Name",

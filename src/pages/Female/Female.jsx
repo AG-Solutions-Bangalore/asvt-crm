@@ -32,6 +32,8 @@ import {
 import { Checkbox } from "@material-tailwind/react";
 import * as Yup from "yup";
 import { ErrorMessage, Field, Form, Formik } from "formik";
+import ProfileImageCell from "../../components/common/ProfileImageCell";
+import { IconPhoto } from "@tabler/icons-react";
 
 const validationSchemaEmail = Yup.object({
   description_message: Yup.string().required("Description is Required"),
@@ -47,6 +49,8 @@ const Female = () => {
   const navigate = useNavigate();
   const [emailCheckDialog, setEmailCheckDialog] = useState(false);
   const [isButtonDisabledEmail, setIsButtonDisabledEmail] = useState(false);
+  const [openNoImageDialog, setOpenNoImageDialog] = useState(false);
+  const [noimageId, setNoImageId] = useState(null);
   const [emailCheck, setEmailCheck] = useState({
     user_data: [],
     description_message: descriptionData?.description,
@@ -93,6 +97,14 @@ const Female = () => {
     setPostId1(id);
     setOpenDialog(true);
   };
+  const handleNoImageDialog = (id) => {
+    setNoImageId(id);
+    setOpenNoImageDialog(true);
+  };
+  const handleCloseNoImageDialog = () => {
+    setNoImageId(null);
+    setOpenNoImageDialog(false);
+  };
 
   const handleCloseDialog1 = () => {
     setOpenDialog(false);
@@ -124,6 +136,34 @@ const Female = () => {
       setIsButtonDisabled(false);
     }
   };
+
+  const onNoImageSubmit = async () => {
+    setIsButtonDisabled(true);
+    const token = localStorage.getItem("token");
+    try {
+      const respose = await axios.put(
+        `${BASE_URL}/panel-update-activation-no-image/${noimageId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (respose.data.code === 200) {
+        toast.success(respose.data.msg || "Profile is Activated");
+        handleCloseNoImageDialog();
+        EditFemlaeData();
+      } else {
+        toast.error(respose.data.msg || "Profile is Activated");
+      }
+    } catch (error) {
+      toast.error(error.message || "Error on  Activated");
+      console.error(error);
+    } finally {
+      setIsButtonDisabled(false);
+    }
+  };
   const RandomValue = Date.now();
 
   const columns = useMemo(
@@ -137,52 +177,21 @@ const Female = () => {
           const imagePath = profilePhoto
             ? `${ImagePath}${profilePhoto}?t=${RandomValue}`
             : NoImagePath;
-          const [loading, setLoading] = useState(true);
 
           return (
-            <div
-              style={{ position: "relative", width: "50px", height: "50px" }}
-            >
-              {loading && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    width: "100%",
-                    height: "100%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  {/* Simple loader */}
-                  <div
-                    style={{
-                      width: "20px",
-                      height: "20px",
-                      border: "2px solid rgba(0, 0, 0, 0.1)",
-                      borderTop: "2px solid #4F46E5",
-                      borderRadius: "50%",
-                      animation: "spin 1s linear infinite",
-                    }}
-                  />
-                </div>
-              )}
-              <img
-                src={imagePath}
-                alt={profilePhoto ? "Profile" : "No Profile"}
-                style={{
-                  width: "50px",
-                  height: "50px",
-                  borderRadius: "50%",
-                  objectFit: "cover",
-                  display: loading ? "none" : "block",
-                }}
-                onLoad={() => setLoading(false)}
-              />
-            </div>
+            <ProfileImageCell
+              imageUrl={imagePath}
+              alt={profilePhoto ? "Profile" : "No Profile"}
+            />
           );
+        },
+      },
+      {
+        accessorKey: "id",
+        header: "Profile Id",
+        size: 50,
+        Cell: ({ row }) => {
+          return <span>{row.original.id || ""}</span>;
         },
       },
       {
@@ -221,6 +230,12 @@ const Female = () => {
         enableHiding: false,
         Cell: ({ row }) => (
           <Flex gap="xs" align="center" justify="center">
+            <Tooltip label="No Image" position="top" withArrow>
+              <IconPhoto
+                className="cursor-pointer text-blue-600 hover:text-blue-800"
+                onClick={() => handleNoImageDialog(row.original.id)}
+              />
+            </Tooltip>
             <Tooltip label="Email" position="top" withArrow>
               <Checkbox
                 className="w-4 h-4"
@@ -598,6 +613,59 @@ const Female = () => {
             );
           }}
         </Formik>
+      </Dialog>
+      {/* //no image dialog */}
+      <Dialog
+        open={openNoImageDialog}
+        onClose={handleNoImageDialog}
+        keepMounted
+        aria-describedby="alert-dialog-slide-description"
+        sx={{
+          backdropFilter: "blur(5px) sepia(5%)",
+          "& .MuiDialog-paper": {
+            borderRadius: "18px",
+          },
+        }}
+        TransitionComponent={Slide}
+        transitionDuration={500}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle
+          sx={{
+            fontSize: "1.5rem",
+            fontWeight: "bold",
+            my: "10px",
+          }}
+        >
+          No Image
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText
+            sx={{
+              fontSize: "15px",
+              my: "10px",
+            }}
+          >
+            Do you want to Update?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <button
+            className="text-center text-sm font-[400] cursor-pointer hover:animate-pulse w-36 text-white bg-red-600 hover:bg-red-400 p-2 rounded-lg shadow-md mr-2"
+            onClick={handleCloseNoImageDialog}
+          >
+            <span>No</span>
+          </button>
+          <button
+            className="text-center text-sm font-[400] cursor-pointer hover:animate-pulse w-36 text-white bg-blue-600 hover:bg-green-700 p-2 rounded-lg shadow-md mr-2"
+            onClick={onNoImageSubmit}
+            disabled={isButtonDisabled}
+          >
+            {/* <span>Confirm</span> */}
+            {isButtonDisabled ? "...Updating" : "Yes"}
+          </button>
+        </DialogActions>
       </Dialog>
     </Layout>
   );
