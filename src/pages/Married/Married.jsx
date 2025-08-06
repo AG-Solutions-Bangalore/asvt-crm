@@ -8,7 +8,14 @@ import {
   Tooltip,
 } from "@mantine/core";
 import { IconButton } from "@material-tailwind/react";
-import { Dialog, Slide } from "@mui/material";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Slide,
+} from "@mui/material";
 import {
   IconCircleX,
   IconEdit,
@@ -29,30 +36,30 @@ import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import BASE_URL, { ImagePath, NoImagePath } from "../../base/BaseUrl";
 import ProfileImageCell from "../../components/common/ProfileImageCell";
-import SelectInput from "../../components/common/SelectInput";
+// import SelectInput from "../../components/common/SelectInput";
 import Layout from "../../layout/Layout";
 
-const validationSchema = Yup.object({
-  payment_amount: Yup.number().required(" Amount is required"),
-  profile_validity_ends: Yup.date()
-    .required("Validity end date is required")
-    .typeError("Invalid date format")
-    .min(new Date(), "Date must be in the future"),
-});
+// const validationSchema = Yup.object({
+//   payment_amount: Yup.number().required(" Amount is required"),
+//   profile_validity_ends: Yup.date()
+//     .required("Validity end date is required")
+//     .typeError("Invalid date format")
+//     .min(new Date(), "Date must be in the future"),
+// });
 const Married = () => {
   const [married, setMarried] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-  const [isButtonDisabled1, setIsButtonDisabled1] = useState(false);
-  const [newregister1, setNewRegister1] = useState({
-    name: "",
-    payment_amount: "",
-    payment_type: "",
-    payment_trans: "",
-    profile_validity_ends: "",
-  });
+  // const [isButtonDisabled1, setIsButtonDisabled1] = useState(false);
+  // const [newregister1, setNewRegister1] = useState({
+  //   name: "",
+  //   payment_amount: "",
+  //   payment_type: "",
+  //   payment_trans: "",
+  //   profile_validity_ends: "",
+  // });
 
-  const [payment, setPayment] = useState([]);
+  // const [payment, setPayment] = useState([]);
 
   const navigate = useNavigate();
   const fetchMarriedData = async () => {
@@ -64,32 +71,38 @@ const Married = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      setMarried(response.data?.user || []);
+      // setMarried(response.data?.user || []);
+      const updatedData = (response.data?.user || []).map((item, index) => ({
+        ...item,
+        id: item.id ? String(item.id) : `generated-${index}`, // fallback id if missing
+      }));
+
+      setMarried(updatedData);
     } catch (error) {
       console.error("Error fetching template data:", error);
     } finally {
       setIsLoading(false);
     }
   };
-  const getPayment = async () => {
-    const token = localStorage.getItem("token");
-    try {
-      const res = await axios.get(`${BASE_URL}/panel-fetch-payment-mode`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+  // const getPayment = async () => {
+  //   const token = localStorage.getItem("token");
+  //   try {
+  //     const res = await axios.get(`${BASE_URL}/panel-fetch-payment-mode`, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
 
-      if (res.data?.paymentMode) {
-        setPayment(res.data.paymentMode);
-      } else {
-        throw new Error("Payment data is missing");
-      }
-    } catch (error) {
-      console.error("Failed to fetch Payment:", error);
-      toast.error("Failed to load Payment data");
-    }
-  };
+  //     if (res.data?.paymentMode) {
+  //       setPayment(res.data.paymentMode);
+  //     } else {
+  //       throw new Error("Payment data is missing");
+  //     }
+  //   } catch (error) {
+  //     console.error("Failed to fetch Payment:", error);
+  //     toast.error("Failed to load Payment data");
+  //   }
+  // };
   useEffect(() => {
     fetchMarriedData();
   }, []);
@@ -98,58 +111,86 @@ const Married = () => {
   const handleOpenDialog = (id) => {
     setPostId(id);
     setOpenDialog1(true);
-    getPayment();
+    // getPayment();
   };
 
   const handleCloseDialog = () => {
     setOpenDialog1(false);
     setPostId(null);
   };
-  const onSubmit = async (values, withEmail = true, actions) => {
-    if (withEmail) {
-      setIsButtonDisabled(true);
-    } else {
-      setIsButtonDisabled1(true);
-    }
+  // const onSubmit = async (values, withEmail = true, actions) => {
+  //   if (withEmail) {
+  //     setIsButtonDisabled(true);
+  //   } else {
+  //     setIsButtonDisabled1(true);
+  //   }
 
+  //   const token = localStorage.getItem("token");
+  //   const data = {
+  //     payment_amount: values.payment_amount,
+  //     payment_type: values.payment_type,
+  //     payment_trans: values.payment_trans,
+  //     profile_validity_ends: values.profile_validity_ends,
+  //   };
+  //   const endpoint = withEmail
+  //     ? `${BASE_URL}/panel-update-activation-withemail/${postId}`
+  //     : `${BASE_URL}/panel-update-activation-withoutemail/${postId}`;
+
+  //   try {
+  //     await axios.put(endpoint, data, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+
+  //     const successMessage = withEmail
+  //       ? "With email activated successfully"
+  //       : "Without email activated successfully";
+
+  //     toast.success(successMessage);
+  //     handleCloseDialog();
+  //     fetchMarriedData();
+  //   } catch (error) {
+  //     const errorMessage = withEmail
+  //       ? "Error activating with email"
+  //       : "Error activating without email";
+
+  //     toast.error(errorMessage);
+  //     console.error(error);
+  //   } finally {
+  //     setIsButtonDisabled(false);
+  //     setIsButtonDisabled1(false);
+  //   }
+  // };
+  const onSubmit = async () => {
+    setIsButtonDisabled(true);
     const token = localStorage.getItem("token");
-    const data = {
-      payment_amount: values.payment_amount,
-      payment_type: values.payment_type,
-      payment_trans: values.payment_trans,
-      profile_validity_ends: values.profile_validity_ends,
-    };
-    const endpoint = withEmail
-      ? `${BASE_URL}/panel-update-activation-withemail/${postId}`
-      : `${BASE_URL}/panel-update-activation-withoutemail/${postId}`;
 
     try {
-      await axios.put(endpoint, data, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const successMessage = withEmail
-        ? "With email activated successfully"
-        : "Without email activated successfully";
-
-      toast.success(successMessage);
-      handleCloseDialog();
-      fetchMarriedData();
+      const response = await axios.put(
+        `${BASE_URL}/panel-update-activation/${postId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log(response, "response");
+      if (response.data.code == 200) {
+        toast.success(response.data.msg || "Deactivated successfully");
+        handleCloseDialog();
+        fetchMarriedData();
+      } else {
+        toast.error(response.data.msg || "Error Please try Again Later");
+      }
     } catch (error) {
-      const errorMessage = withEmail
-        ? "Error activating with email"
-        : "Error activating without email";
-
-      toast.error(errorMessage);
+      toast.error(error.message || "Error Please try Again Later");
       console.error(error);
     } finally {
       setIsButtonDisabled(false);
-      setIsButtonDisabled1(false);
     }
   };
-
   const FormLabel = ({ children, required }) => (
     <label className="block text-sm font-semibold text-black mb-1">
       {children}
@@ -162,68 +203,6 @@ const Married = () => {
 
   const columns = useMemo(
     () => [
-      // {
-      //   accessorKey: "profile_full_face_photo_file_name",
-      //   header: "Profile Photo",
-      //   size: 150,
-      //   Cell: ({ row }) => {
-      //     const profilePhoto = row.original.profile_full_face_photo_file_name;
-      //     const imagePath = profilePhoto
-      //       ? `${ImagePath}${profilePhoto}?t=${RandomValue}`
-      //       : NoImagePath;
-      //     const [loading, setLoading] = useState(true);
-
-      //     return (
-      //       <div
-      //         style={{ position: "relative", width: "50px", height: "50px" }}
-      //       >
-      //         {loading && (
-      //           <div
-      //             style={{
-      //               position: "absolute",
-      //               top: 0,
-      //               left: 0,
-      //               width: "100%",
-      //               height: "100%",
-      //               display: "flex",
-      //               alignItems: "center",
-      //               justifyContent: "center",
-      //             }}
-      //           >
-      //             <div
-      //               style={{
-      //                 width: "20px",
-      //                 height: "20px",
-      //                 border: "2px solid rgba(0, 0, 0, 0.1)",
-      //                 borderTop: "2px solid #4F46E5",
-      //                 borderRadius: "50%",
-      //                 animation: "spin 1s linear infinite",
-      //               }}
-      //             />
-      //           </div>
-      //         )}
-      //         <img
-      //           src={imagePath}
-      //           alt={profilePhoto ? "Profile" : "No Profile"}
-      //           style={{
-      //             width: "50px",
-      //             height: "50px",
-      //             borderRadius: "50%",
-      //             objectFit: "cover",
-      //             display: loading ? "none" : "block",
-      //           }}
-      //           onLoad={() => setLoading(false)}
-      //         />
-      //       </div>
-      //     );
-      //   },
-      // },
-
-      // {
-      //   accessorKey: "id",
-      //   header: "Profile Id",
-      //   size: 50,
-      // },
       {
         accessorKey: "profile_full_face_photo_file_name",
         header: "Profile Photo",
@@ -246,10 +225,8 @@ const Married = () => {
         accessorKey: "id",
         header: "Profile Id",
         size: 50,
-        Cell: ({ row }) => {
-          return <span>{row.original.id || ""}</span>;
-        },
       },
+
       {
         accessorKey: "name",
         header: "Name",
@@ -265,23 +242,23 @@ const Married = () => {
         header: "Father Name",
         size: 50,
       },
-      {
-        accessorKey: "profile_main_contact_num",
-        header: "Mobile Number",
-        size: 50,
-      },
-      {
-        accessorKey: "profile_gotra",
-        header: "Gotra",
-      },
-      {
-        accessorKey: "profile_place_of_birth",
-        header: "Place of Birth",
-        size: 50,
-      },
+      // {
+      //   accessorKey: "profile_main_contact_num",
+      //   header: "Mobile Number",
+      //   size: 50,
+      // },
+      // {
+      //   accessorKey: "profile_gotra",
+      //   header: "Gotra",
+      // },
+      // {
+      //   accessorKey: "profile_place_of_birth",
+      //   header: "Place of Birth",
+      //   size: 50,
+      // },
 
       {
-        id: "id",
+        id: "actions",
         header: "Action",
         size: 50,
         enableHiding: false,
@@ -319,6 +296,7 @@ const Married = () => {
   const table = useMantineReactTable({
     columns,
     data: married,
+    getRowId: (row) => String(row.id) || `row-${Math.random()}`,
     enableColumnActions: false,
     enableStickyHeader: true,
     enableStickyFooter: true,
@@ -364,14 +342,14 @@ const Married = () => {
             table={table}
             mantineTableContainerProps={{
               sx: {
-                overflowX: "auto", // Enable horizontal scrolling
-                maxWidth: "100%", // Ensure it adapts to the container
+                overflowX: "auto",
+                maxWidth: "100%",
               },
             }}
           />
         )}
       </Box>
-      <Dialog
+      {/* <Dialog
         open={openDialog1}
         onClose={handleCloseDialog}
         keepMounted
@@ -540,6 +518,59 @@ const Married = () => {
             }}
           </Formik>
         )}
+      </Dialog> */}
+
+      <Dialog
+        open={openDialog1}
+        onClose={handleCloseDialog}
+        keepMounted
+        aria-describedby="alert-dialog-slide-description"
+        sx={{
+          backdropFilter: "blur(5px) sepia(5%)",
+
+          "& .MuiDialog-paper": {
+            borderRadius: "18px",
+          },
+        }}
+        TransitionComponent={Slide}
+        transitionDuration={500}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle
+          sx={{
+            fontSize: "1.5rem",
+            fontWeight: "bold",
+            my: "10px",
+          }}
+        >
+          Confirm Activation
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText
+            sx={{
+              fontSize: "15px",
+              my: "10px",
+            }}
+          >
+            Are you sure you want to Activation?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <button
+            className="text-center text-sm font-[400] cursor-pointer hover:animate-pulse w-36 text-white bg-red-600 hover:bg-red-400 p-2 rounded-lg shadow-md mr-2"
+            onClick={handleCloseDialog}
+          >
+            <span>No</span>
+          </button>
+          <button
+            className="text-center text-sm font-[400] cursor-pointer hover:animate-pulse w-36 text-white bg-blue-600 hover:bg-green-700 p-2 rounded-lg shadow-md mr-2"
+            onClick={onSubmit}
+            disabled={isButtonDisabled}
+          >
+            {isButtonDisabled ? "Deactivating..." : "Yes"}
+          </button>
+        </DialogActions>
       </Dialog>
     </Layout>
   );

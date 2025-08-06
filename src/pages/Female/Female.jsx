@@ -1,26 +1,13 @@
-import React, { useEffect, useMemo, useState } from "react";
-import Layout from "../../layout/Layout";
-import axios from "axios";
-import BASE_URL from "../../base/BaseUrl";
-import { Tooltip } from "@mantine/core";
 import {
-  MantineReactTable,
-  useMantineReactTable,
-  MRT_GlobalFilterTextInput,
-  MRT_ToggleFiltersButton,
-} from "mantine-react-table";
-import { Box, Button, Center, Flex, Loader, Text } from "@mantine/core";
-import {
-  IconEdit,
-  IconEye,
-  IconRadioactive,
-  IconRefresh,
-  IconCircleX,
-} from "@tabler/icons-react";
-import { useNavigate } from "react-router-dom";
-import { ImagePath, NoImagePath } from "../../base/BaseUrl";
-import descriptionData from "../../json/emailjson.json";
-import toast from "react-hot-toast";
+  Box,
+  Button,
+  Center,
+  Flex,
+  Loader,
+  Text,
+  Tooltip,
+} from "@mantine/core";
+import { Checkbox } from "@material-tailwind/react";
 import {
   Dialog,
   DialogActions,
@@ -29,11 +16,32 @@ import {
   DialogTitle,
   Slide,
 } from "@mui/material";
-import { Checkbox } from "@material-tailwind/react";
-import * as Yup from "yup";
+import {
+  IconCircleX,
+  IconEdit,
+  IconEye,
+  IconPhoto,
+  IconRadioactive,
+  IconRefresh,
+} from "@tabler/icons-react";
+import axios from "axios";
 import { ErrorMessage, Field, Form, Formik } from "formik";
+import {
+  MantineReactTable,
+  MRT_GlobalFilterTextInput,
+  MRT_ToggleFiltersButton,
+  useMantineReactTable,
+} from "mantine-react-table";
+import { useEffect, useMemo, useState } from "react";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import * as Yup from "yup";
+import BASE_URL, { ImagePath, NoImagePath } from "../../base/BaseUrl";
 import ProfileImageCell from "../../components/common/ProfileImageCell";
-import { IconPhoto } from "@tabler/icons-react";
+import descriptionData from "../../json/emailjson.json";
+import Layout from "../../layout/Layout";
+import NoImageDialog from "../../components/common/NoImageDialog";
+import { IconPhotoX } from "@tabler/icons-react";
 
 const validationSchemaEmail = Yup.object({
   description_message: Yup.string().required("Description is Required"),
@@ -63,7 +71,7 @@ const Female = () => {
       return { ...prev, user_data: updatedUserData };
     });
   };
-  const EditFemlaeData = async () => {
+  const FetchFemaleData = async () => {
     setIsLoading(true);
     try {
       const token = localStorage.getItem("token");
@@ -72,7 +80,11 @@ const Female = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      setFemale(response.data?.user || []);
+      const updatedData = (response.data?.user || []).map((item, index) => ({
+        ...item,
+        id: item.id ? String(item.id) : `generated-${index}`,
+      }));
+      setFemale(updatedData || []);
     } catch (error) {
       console.error("Error fetching template data:", error);
     } finally {
@@ -81,7 +93,7 @@ const Female = () => {
   };
 
   useEffect(() => {
-    EditFemlaeData();
+    FetchFemaleData();
   }, []);
   const handleOpenDialog = (id) => {
     setPostId(id);
@@ -128,7 +140,7 @@ const Female = () => {
       toast.success("deactivated successfully");
 
       handleCloseDialog();
-      EditFemlaeData();
+      FetchFemaleData();
     } catch (error) {
       toast.error(" error deactivated");
       console.error(error);
@@ -137,33 +149,6 @@ const Female = () => {
     }
   };
 
-  const onNoImageSubmit = async () => {
-    setIsButtonDisabled(true);
-    const token = localStorage.getItem("token");
-    try {
-      const respose = await axios.put(
-        `${BASE_URL}/panel-update-activation-no-image/${noimageId}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      if (respose.data.code === 200) {
-        toast.success(respose.data.msg || "Profile is Activated");
-        handleCloseNoImageDialog();
-        EditFemlaeData();
-      } else {
-        toast.error(respose.data.msg || "Profile is Activated");
-      }
-    } catch (error) {
-      toast.error(error.message || "Error on  Activated");
-      console.error(error);
-    } finally {
-      setIsButtonDisabled(false);
-    }
-  };
   const RandomValue = Date.now();
 
   const columns = useMemo(
@@ -190,9 +175,6 @@ const Female = () => {
         accessorKey: "id",
         header: "Profile Id",
         size: 50,
-        Cell: ({ row }) => {
-          return <span>{row.original.id || ""}</span>;
-        },
       },
       {
         accessorKey: "name",
@@ -209,29 +191,29 @@ const Female = () => {
         header: "Father Name",
         size: 50,
       },
+      // {
+      //   accessorKey: "profile_main_contact_num",
+      //   header: "Mobile Number",
+      //   size: 50,
+      // },
+      // {
+      //   accessorKey: "profile_gotra",
+      //   header: "Gotra",
+      // },
+      // {
+      //   accessorKey: "profile_place_of_birth",
+      //   header: "Place of Birth",
+      //   size: 50,
+      // },
       {
-        accessorKey: "profile_main_contact_num",
-        header: "Mobile Number",
-        size: 50,
-      },
-      {
-        accessorKey: "profile_gotra",
-        header: "Gotra",
-      },
-      {
-        accessorKey: "profile_place_of_birth",
-        header: "Place of Birth",
-        size: 50,
-      },
-      {
-        id: "id",
+        id: "actions",
         header: "Action",
         size: 50,
         enableHiding: false,
         Cell: ({ row }) => (
           <Flex gap="xs" align="center" justify="center">
             <Tooltip label="No Image" position="top" withArrow>
-              <IconPhoto
+              <IconPhotoX
                 className="cursor-pointer text-blue-600 hover:text-blue-800"
                 onClick={() => handleNoImageDialog(row.original.id)}
               />
@@ -614,59 +596,13 @@ const Female = () => {
           }}
         </Formik>
       </Dialog>
-      {/* //no image dialog */}
-      <Dialog
+
+      <NoImageDialog
         open={openNoImageDialog}
-        onClose={handleNoImageDialog}
-        keepMounted
-        aria-describedby="alert-dialog-slide-description"
-        sx={{
-          backdropFilter: "blur(5px) sepia(5%)",
-          "& .MuiDialog-paper": {
-            borderRadius: "18px",
-          },
-        }}
-        TransitionComponent={Slide}
-        transitionDuration={500}
-        fullWidth
-        maxWidth="sm"
-      >
-        <DialogTitle
-          sx={{
-            fontSize: "1.5rem",
-            fontWeight: "bold",
-            my: "10px",
-          }}
-        >
-          No Image
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText
-            sx={{
-              fontSize: "15px",
-              my: "10px",
-            }}
-          >
-            Do you want to Update?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <button
-            className="text-center text-sm font-[400] cursor-pointer hover:animate-pulse w-36 text-white bg-red-600 hover:bg-red-400 p-2 rounded-lg shadow-md mr-2"
-            onClick={handleCloseNoImageDialog}
-          >
-            <span>No</span>
-          </button>
-          <button
-            className="text-center text-sm font-[400] cursor-pointer hover:animate-pulse w-36 text-white bg-blue-600 hover:bg-green-700 p-2 rounded-lg shadow-md mr-2"
-            onClick={onNoImageSubmit}
-            disabled={isButtonDisabled}
-          >
-            {/* <span>Confirm</span> */}
-            {isButtonDisabled ? "...Updating" : "Yes"}
-          </button>
-        </DialogActions>
-      </Dialog>
+        onClose={handleCloseNoImageDialog}
+        refetch={FetchFemaleData}
+        noimageId={noimageId}
+      />
     </Layout>
   );
 };

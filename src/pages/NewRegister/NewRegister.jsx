@@ -5,7 +5,7 @@ import {
   Flex,
   Loader,
   Text,
-  Tooltip
+  Tooltip,
 } from "@mantine/core";
 import { Button, Checkbox, IconButton } from "@material-tailwind/react";
 import { Dialog, Slide } from "@mui/material";
@@ -31,6 +31,7 @@ import BASE_URL, { ImagePath, NoImagePath } from "../../base/BaseUrl";
 import SelectInput from "../../components/common/SelectInput";
 import descriptionData from "../../json/emailjson.json";
 import Layout from "../../layout/Layout";
+import ProfileImageCell from "../../components/common/ProfileImageCell";
 const validationSchema = Yup.object({
   payment_amount: Yup.number().required(" Amount is required"),
   profile_validity_ends: Yup.date()
@@ -86,7 +87,12 @@ const NewRegister = () => {
           },
         }
       );
-      setNewRegister(response.data?.user || []);
+      // setNewRegister(response.data?.user || []);
+      const updatedData = (response.data?.user || []).map((item, index) => ({
+        ...item,
+        id: item.id ? String(item.id) : `generated-${index}`, // fallback id if missing
+      }));
+      setNewRegister(updatedData || []);
     } catch (error) {
       console.error("Error fetching new register data:", error);
     } finally {
@@ -139,54 +145,20 @@ const NewRegister = () => {
           const imagePath = profilePhoto
             ? `${ImagePath}${profilePhoto}?t=${RandomValue}`
             : NoImagePath;
-          const [loading, setLoading] = useState(true);
 
           return (
-            <div
-              style={{ position: "relative", width: "50px", height: "50px" }}
-            >
-              {loading && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    width: "100%",
-                    height: "100%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <div
-                    style={{
-                      width: "20px",
-                      height: "20px",
-                      border: "2px solid rgba(0, 0, 0, 0.1)",
-                      borderTop: "2px solid #4F46E5",
-                      borderRadius: "50%",
-                      animation: "spin 1s linear infinite",
-                    }}
-                  />
-                </div>
-              )}
-              <img
-                src={imagePath}
-                alt={profilePhoto ? "Profile" : "No Profile"}
-                style={{
-                  width: "50px",
-                  height: "50px",
-                  borderRadius: "50%",
-                  objectFit: "cover",
-                  display: loading ? "none" : "block",
-                }}
-                onLoad={() => setLoading(false)}
-              />
-            </div>
+            <ProfileImageCell
+              imageUrl={imagePath}
+              alt={profilePhoto ? "Profile" : "No Profile"}
+            />
           );
         },
       },
-
+      {
+        accessorKey: "id",
+        header: "Profile Id",
+        size: 50,
+      },
       {
         accessorKey: "name",
         header: "Name",
@@ -217,7 +189,7 @@ const NewRegister = () => {
         size: 50,
       },
       {
-        id: "id",
+        id: "actions",
         header: "Action",
         size: 50,
         enableHiding: false,
@@ -675,7 +647,6 @@ const NewRegister = () => {
             }}
           </Formik>
         </Dialog>
-
       </>
     </Layout>
   );

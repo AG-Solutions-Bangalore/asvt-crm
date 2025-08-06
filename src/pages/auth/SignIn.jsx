@@ -1,5 +1,5 @@
 import { Typography } from "@material-tailwind/react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import BASE_URL from "../../base/BaseUrl";
@@ -19,6 +19,7 @@ const validationSchema = Yup.object({
 });
 
 const SignIn = () => {
+  const usernameRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const inputClass =
@@ -49,10 +50,7 @@ const SignIn = () => {
           "profile_photo",
           res.data.UserInfo.user.profile_full_face_photo_file_name
         );
-        // localStorage.setItem(
-        //   "profile_mobile",
-        //   res.data.UserInfo.user.profile_mobile
-        // );
+
         if (token) {
           localStorage.setItem("token", token);
           navigate("/home");
@@ -78,12 +76,9 @@ const SignIn = () => {
       setSubmitting(false);
     }
   };
-  const FormLabel = ({ children, required }) => (
-    <label className="block text-sm font-semibold text-black mb-1 ">
-      {children}
-      {required && <span className="text-red-500 ml-1">*</span>}
-    </label>
-  );
+  useEffect(() => {
+    usernameRef.current?.focus();
+  }, []);
   return (
     <>
       <Toaster
@@ -143,6 +138,7 @@ const SignIn = () => {
                       type="text"
                       name="username"
                       className={inputClass}
+                      innerRef={usernameRef}
                       onChange={(e) => {
                         console.log("Username changing to:", e.target.value);
                         setFieldValue("username", e.target.value);

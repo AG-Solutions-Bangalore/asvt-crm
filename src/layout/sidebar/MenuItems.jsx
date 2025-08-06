@@ -1,4 +1,5 @@
 import { IconBellRinging } from "@tabler/icons-react";
+import { IconPhotoX } from "@tabler/icons-react";
 import {
   IconCopy,
   IconLayoutDashboard,
@@ -59,7 +60,7 @@ const getMenuItems = (userTypeId) => [
   {
     id: "noimage",
     title: "No Image",
-    icon: IconWoman,
+    icon: IconPhotoX,
     href: "/no-image",
   },
   {

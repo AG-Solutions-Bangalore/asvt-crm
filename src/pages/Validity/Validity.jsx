@@ -30,7 +30,12 @@ const Validity = () => {
           },
         }
       );
-      setFemale(response.data?.user || []);
+      const updatedData = (response.data?.user || []).map((item, index) => ({
+        ...item,
+        id: item.id ? String(item.id) : `generated-${index}`,
+      }));
+      setFemale(updatedData || []);
+      // setFemale(response.data?.user || []);
     } catch (error) {
       console.error("Error fetching template data:", error);
     } finally {
@@ -45,63 +50,6 @@ const Validity = () => {
 
   const columns = useMemo(
     () => [
-      // {
-      //   accessorKey: "profile_full_face_photo_file_name",
-      //   header: "Profile Photo",
-      //   size: 150,
-      //   Cell: ({ row }) => {
-      //     const profilePhoto = row.original.profile_full_face_photo_file_name;
-      //     const imagePath = profilePhoto
-      //       ? `${ImagePath}${profilePhoto}?t=${RandomValue}`
-      //       : NoImagePath;
-      //     const [loading, setLoading] = useState(true);
-
-      //     return (
-      //       <div
-      //         style={{ position: "relative", width: "50px", height: "50px" }}
-      //       >
-      //         {loading && (
-      //           <div
-      //             style={{
-      //               position: "absolute",
-      //               top: 0,
-      //               left: 0,
-      //               width: "100%",
-      //               height: "100%",
-      //               display: "flex",
-      //               alignItems: "center",
-      //               justifyContent: "center",
-      //             }}
-      //           >
-      //             {/* Simple loader */}
-      //             <div
-      //               style={{
-      //                 width: "20px",
-      //                 height: "20px",
-      //                 border: "2px solid rgba(0, 0, 0, 0.1)",
-      //                 borderTop: "2px solid #4F46E5",
-      //                 borderRadius: "50%",
-      //                 animation: "spin 1s linear infinite",
-      //               }}
-      //             />
-      //           </div>
-      //         )}
-      //         <img
-      //           src={imagePath}
-      //           alt={profilePhoto ? "Profile" : "No Profile"}
-      //           style={{
-      //             width: "50px",
-      //             height: "50px",
-      //             borderRadius: "50%",
-      //             objectFit: "cover",
-      //             display: loading ? "none" : "block",
-      //           }}
-      //           onLoad={() => setLoading(false)}
-      //         />
-      //       </div>
-      //     );
-      //   },
-      // },
       {
         accessorKey: "profile_full_face_photo_file_name",
         header: "Profile Photo",
@@ -124,9 +72,6 @@ const Validity = () => {
         accessorKey: "id",
         header: "Profile Id",
         size: 50,
-        Cell: ({ row }) => {
-          return <span>{row.original.id || ""}</span>;
-        },
       },
       {
         accessorKey: "name",
@@ -143,18 +88,18 @@ const Validity = () => {
         header: "Father Name",
         size: 50,
       },
+      // {
+      //   accessorKey: "profile_main_contact_num",
+      //   header: "Mobile Number",
+      //   size: 50,
+      // },
+      // {
+      //   accessorKey: "profile_place_of_birth",
+      //   header: "Place of Birth",
+      //   size: 50,
+      // },
       {
-        accessorKey: "profile_main_contact_num",
-        header: "Mobile Number",
-        size: 50,
-      },
-      {
-        accessorKey: "profile_place_of_birth",
-        header: "Place of Birth",
-        size: 50,
-      },
-      {
-        id: "id",
+        id: "actions",
         header: "Action",
         size: 50,
         enableHiding: false,

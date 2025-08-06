@@ -1,67 +1,77 @@
 import {
-    Box,
-    Button,
-    Center,
-    Flex,
-    Loader,
-    Text,
-    Tooltip,
+  ActionIcon,
+  Box,
+  Button,
+  Center,
+  Flex,
+  Loader,
+  Select,
+  Text,
+  Tooltip,
 } from "@mantine/core";
-import {
-    IconCircleX
-} from "@tabler/icons-react";
+import { IconCircleX, IconEdit } from "@tabler/icons-react";
 import axios from "axios";
-import { ErrorMessage, Field, Form, Formik } from "formik";
+import { ErrorMessage, Form, Formik } from "formik";
 import {
-    MantineReactTable,
-    MRT_GlobalFilterTextInput,
-    MRT_ToggleFiltersButton,
-    useMantineReactTable,
+  MantineReactTable,
+  MRT_GlobalFilterTextInput,
+  MRT_ToggleFiltersButton,
+  useMantineReactTable,
 } from "mantine-react-table";
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
-import BASE_URL, { NoImagePath } from "../../base/BaseUrl";
-import descriptionData from "../../json/emailjson.json";
+import BASE_URL, { ImagePath, NoImagePath } from "../../base/BaseUrl";
 import Layout from "../../layout/Layout";
 
-import { Checkbox } from "@material-tailwind/react";
-import {
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogContentText,
-    DialogTitle,
-    Slide,
-} from "@mui/material";
-import { IconPhoto } from "@tabler/icons-react";
+import { Dialog, Slide } from "@mui/material";
+import { IconBrandWhatsapp, IconPhotoX } from "@tabler/icons-react";
 import toast from "react-hot-toast";
+import NoImageDialog from "../../components/common/NoImageDialog";
 import ProfileImageCell from "../../components/common/ProfileImageCell";
-const validationSchemaEmail = Yup.object({
-  description_message: Yup.string().required("Description is Required"),
+const validationSchemaUpdateImage = Yup.object({
+  profile_id: Yup.string().required("Profile  is required"),
+  facePhoto: Yup.mixed().required("Face Photo is required"),
+  fullPhoto: Yup.mixed().required("Profile Full Photo is required"),
 });
 const NoImage = () => {
+  const [whatsappdata, setWhatsappData] = useState([]);
   const [noimage, setNoImage] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-  const [emailCheckDialog, setEmailCheckDialog] = useState(false);
-  const [isButtonDisabledEmail, setIsButtonDisabledEmail] = useState(false);
   const [openNoImageDialog, setOpenNoImageDialog] = useState(false);
+  const [openImageDialog, setOpenImageDialog] = useState(false);
   const [noimageId, setNoImageId] = useState(null);
-  const [emailCheck, setEmailCheck] = useState({
-    user_data: [],
-    description_message: descriptionData?.description,
+  const [selectedWhatsappType, setSelectedWhatssappType] = useState(null);
+  const [imageData, setImageData] = useState({
+    profile_id: "",
+    fullPhoto: "",
+    facePhoto: "",
   });
-  const handleCheckBoxChange = (e, id) => {
-    setEmailCheck((prev) => {
-      const updatedUserData = e.target.checked
-        ? [...prev.user_data, id]
-        : prev.user_data.filter((item) => item !== id);
-      return { ...prev, user_data: updatedUserData };
-    });
+
+
+  const fetchWhatsappData = async () => {
+    setIsLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(`${BASE_URL}/panel-fetch-message`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const formatted = response.data.data.map((item) => ({
+        value: item.message_heading,
+        label: item.message_heading,
+        message_description: item.message_description, 
+      }));
+
+      setWhatsappData(formatted);
+      setWhatsappData(formatted || []);
+    } catch (error) {
+      console.error("Error fetching template data:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
-  const navigate = useNavigate();
   const fetchNoImageData = async () => {
     setIsLoading(true);
     try {
@@ -71,7 +81,11 @@ const NoImage = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      setNoImage(response.data?.user || []);
+      const updatedData = (response.data?.user || []).map((item, index) => ({
+        ...item,
+        id: item.id ? String(item.id) : `generated-${index}`,
+      }));
+      setNoImage(updatedData || []);
     } catch (error) {
       console.error("Error fetching template data:", error);
     } finally {
@@ -81,8 +95,27 @@ const NoImage = () => {
 
   useEffect(() => {
     fetchNoImageData();
+    fetchWhatsappData();
   }, []);
 
+  const handleImageDialog = (id) => {
+    setNoImageId(id);
+    setImageData((prev) => ({
+      ...prev,
+      profile_id: id,
+    }));
+    setOpenImageDialog(true);
+  };
+
+  const handleCloseImageDialog = () => {
+    setNoImageId(null);
+    setOpenImageDialog(false);
+    setImageData({
+      profile_id: "",
+      fullPhoto: "",
+      facePhoto: "",
+    });
+  };
   const handleNoImageDialog = (id) => {
     setNoImageId(id);
     setOpenNoImageDialog(true);
@@ -92,23 +125,59 @@ const NoImage = () => {
     setOpenNoImageDialog(false);
   };
 
+  const handleOpenWhatsApp = (phoneNumber) => {
+    console.log(phoneNumber)
+    if (!selectedWhatsappType) {
+      toast.error("Please select a WhatsApp message type first.");
+      return;
+    }
+
+    if (!phoneNumber) {
+      toast.error("Phone number is missing or invalid.");
+      return;
+    }
+
+    const cleanedPhone = phoneNumber.replace(/\D/g, "").replace(/^91/, "");
+
+    const selected = whatsappdata.find(
+      (item) => item.value === selectedWhatsappType
+    );
+
+    if (!selected || !selected.message_description) {
+      toast.error("Message content not found for selected type.");
+      return;
+    }
+
+    const encodedMessage = encodeURIComponent(selected.message_description);
+    const url = `https://wa.me/91${cleanedPhone}?text=${encodedMessage}`;
+
+    window.open(url, "_blank");
+  };
+
+  const RandomValue = Date.now();
   const columns = useMemo(
     () => [
       {
-        accessorKey: "noimage",
+        accessorKey: "profile_full_face_photo_file_name",
         header: "Profile Photo",
         size: 150,
         Cell: ({ row }) => {
-          return <ProfileImageCell imageUrl={NoImagePath} alt="No Profile" />;
+          const profilePhoto = row.original.profile_full_face_photo_file_name;
+          const imagePath = profilePhoto
+            ? `${ImagePath}${profilePhoto}?t=${RandomValue}`
+            : NoImagePath;
+          return (
+            <ProfileImageCell
+              imageUrl={imagePath}
+              alt={profilePhoto ? "Profile" : "No Profile"}
+            />
+          );
         },
       },
       {
         accessorKey: "id",
         header: "Profile Id",
         size: 50,
-        Cell: ({ row }) => {
-          return <span>{row.original.id || ""}</span>;
-        },
       },
       {
         accessorKey: "name",
@@ -125,47 +194,69 @@ const NoImage = () => {
         header: "Father Name",
         size: 50,
       },
+      // {
+      //   accessorKey: "profile_main_contact_num",
+      //   header: "Mobile Number",
+      //   size: 50,
+      // },
+      // {
+      //   accessorKey: "profile_gotra",
+      //   header: "Gotra",
+      // },
+      // {
+      //   accessorKey: "profile_place_of_birth",
+      //   header: "Place of Birth",
+      //   size: 50,
+      // },
       {
-        accessorKey: "profile_main_contact_num",
-        header: "Mobile Number",
-        size: 50,
-      },
-      {
-        accessorKey: "profile_gotra",
-        header: "Gotra",
-      },
-      {
-        accessorKey: "profile_place_of_birth",
-        header: "Place of Birth",
-        size: 50,
-      },
-      {
-        id: "id",
+        id: "actions",
         header: "Action",
         size: 50,
         enableHiding: false,
         Cell: ({ row }) => (
           <Flex gap="xs" className="items-center">
-            <Tooltip label="Whatsapp" position="top" withArrow>
-              <Checkbox
-                className="w-4 h-4"
-                color="blue"
-                key={row.original.id}
-                checked={emailCheck.user_data.includes(row.original.id)}
-                onChange={(e) => handleCheckBoxChange(e, row.original.id)}
-              />
+            <Tooltip label="Send WhatsApp" position="top" withArrow>
+        
+
+              <ActionIcon
+                variant="transparent"
+                color="green"
+                onClick={() => {
+                  if (selectedWhatsappType) {
+                    handleOpenWhatsApp(row.original.profile_main_contact_num);
+                  }
+                }}
+                disabled={
+                  selectedWhatsappType === "" || selectedWhatsappType === null
+                }
+              >
+                <IconBrandWhatsapp
+                  className={`${
+                    selectedWhatsappType
+                      ? "text-green-600 hover:text-green-800"
+                      : "text-gray-300"
+                  }`}
+                />
+              </ActionIcon>
             </Tooltip>
+
             <Tooltip label="No Image" position="top" withArrow>
-              <IconPhoto
+              <IconPhotoX
                 className="cursor-pointer text-blue-600 hover:text-blue-800"
                 onClick={() => handleNoImageDialog(row.original.id)}
+              />
+            </Tooltip>
+            <Tooltip label="Image Upload" position="top" withArrow>
+              <IconEdit
+                className="cursor-pointer text-blue-600 hover:text-blue-800"
+                onClick={() => handleImageDialog(row.original.id)}
               />
             </Tooltip>
           </Flex>
         ),
       },
     ],
-    [emailCheck]
+    [selectedWhatsappType]
   );
 
   const table = useMantineReactTable({
@@ -190,36 +281,39 @@ const NoImage = () => {
         >
           {" "}
           <Text size="xl" weight={700}>
-            No Image
+            No Images
           </Text>
           <Flex gap="sm">
             <MRT_GlobalFilterTextInput table={table} />
             <MRT_ToggleFiltersButton table={table} />
 
-            <Button
-              className="w-36 text-white bg-blue-600 hover:bg-violet-400 hover:animate-pulse"
-              onClick={() => setEmailCheckDialog(true)}
-              disabled={emailCheck.user_data.length === 0}
-            >
-              Send Mail
-            </Button>
+            <Select
+              placeholder="Select whatsapp type"
+              data={whatsappdata}
+              value={selectedWhatsappType}
+              onChange={(value) => {
+                setSelectedWhatssappType(value);
+              }}
+              withinPortal
+              clearable
+              className="w-48"
+            />
           </Flex>
         </Flex>
       );
     },
   });
-  const onSubmitEmail = async (values) => {
+  const onUpdateImage = async (values) => {
     const token = localStorage.getItem("token");
-    const data = {
-      user_data: emailCheck.user_data.join(","),
-      description_message: values.description_message,
-    };
-
+    const formData = new FormData();
+    formData.append("profile_id", values.profile_id);
+    formData.append("fullPhoto", values.fullPhoto);
+    formData.append("facePhoto", values.facePhoto);
     try {
-      setIsButtonDisabledEmail(true);
+      setIsButtonDisabled(true);
       const response = await axios.post(
-        `${BASE_URL}/panel-send-mail-to-user`,
-        data,
+        `${BASE_URL}/panel-update-no-image`,
+        formData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -227,51 +321,22 @@ const NoImage = () => {
         }
       );
       if (response.data.code == 200) {
-        toast.success(response.data.msg);
-        setEmailCheckDialog(false);
-        setEmailCheck({
-          user_data: [],
-          description_message: descriptionData?.description,
-        });
+        toast.success(response.data.msg || "Image Updated Sucessfully");
+        handleCloseImageDialog();
+        fetchNoImageData();
       } else if (response.data.code == 400) {
         toast.error(response.data.msg);
       } else {
-        toast.error("Failed to Send Mail");
+        toast.error(response.data.msg || "Failed to upload Image");
       }
     } catch (error) {
-      toast.error("Failed to Send Mail");
-      console.error(error);
-    } finally {
-      setIsButtonDisabledEmail(false);
-    }
-  };
-  const onNoImageSubmit = async () => {
-    setIsButtonDisabled(true);
-    const token = localStorage.getItem("token");
-    try {
-      const respose = await axios.put(
-        `${BASE_URL}/panel-update-activation-no-image/${noimageId}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      if (respose.data.code === 200) {
-        toast.success(respose.data.msg || "Profile is Activated");
-        handleCloseNoImageDialog();
-        fetchNoImageData();
-      } else {
-        toast.error(respose.data.msg || "Profile is Activated");
-      }
-    } catch (error) {
-      toast.error(error.message || "Error on  Activated");
+      toast.error(error.message || "Failed to upload Image");
       console.error(error);
     } finally {
       setIsButtonDisabled(false);
     }
   };
+
   const FormLabel = ({ children, required }) => (
     <label className="block text-sm font-semibold text-black mb-1">
       {children}
@@ -296,9 +361,10 @@ const NoImage = () => {
         )}
       </Box>
 
+      {/* //image upoload */}
       <Dialog
-        open={emailCheckDialog}
-        onClose={() => setEmailCheckDialog(false)}
+        open={openImageDialog}
+        onClose={handleCloseImageDialog}
         keepMounted
         aria-describedby="alert-dialog-slide-description"
         sx={{
@@ -312,14 +378,15 @@ const NoImage = () => {
       >
         {" "}
         <Formik
-          initialValues={emailCheck}
-          validationSchema={validationSchemaEmail}
+          initialValues={imageData}
+          validationSchema={validationSchemaUpdateImage}
           enableReinitialize
           onSubmit={(values, actions) => {
+            onUpdateImage(values);
             actions.resetForm();
           }}
         >
-          {({ values, handleChange, handleBlur }) => {
+          {({ values, handleBlur, setFieldValue }) => {
             return (
               <Form
                 autoComplete="off"
@@ -329,13 +396,10 @@ const NoImage = () => {
                   <div>
                     <div className="flex justify-between items-center mb-2">
                       <h1 className="text-slate-800 text-xl font-semibold">
-                        Email Send
+                        Update Images
                       </h1>
 
-                      <div
-                        className="flex"
-                        onClick={() => setEmailCheckDialog(false)}
-                      >
+                      <div className="flex" onClick={handleCloseImageDialog}>
                         <Tooltip label="Close" position="top" withArrow>
                           <button type="button" className="ml-3 pl-2">
                             <IconCircleX />
@@ -345,41 +409,84 @@ const NoImage = () => {
                     </div>
 
                     <div className="mt-2 p-4">
-                      <div className="grid grid-cols-1 p-2 gap-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <FormLabel required>Description Message</FormLabel>
-                          <Field
-                            name="description_message"
-                            value={values.description_message}
-                            onChange={handleChange}
+                          <FormLabel required>Full Length Photograph</FormLabel>
+                          <input
+                            type="file"
+                            name="fullPhoto"
+                            onChange={(event) => {
+                              if (
+                                event.currentTarget.files &&
+                                event.currentTarget.files[0]
+                              ) {
+                                setFieldValue(
+                                  "fullPhoto",
+                                  event.currentTarget.files[0]
+                                );
+                              }
+                            }}
                             onBlur={handleBlur}
-                            as="textarea"
-                            className={`${inputClass} resize-y`}
-                            rows="6"
+                            className={inputClass}
                           />
-
                           <ErrorMessage
-                            name="description_message"
+                            name="fullPhoto"
                             component="div"
                             className="text-red-500 text-xs"
                           />
+
+                          {values.fullPhoto && (
+                            <div className="text-xs text-red-400">
+                              Selected file:{" "}
+                              {values.fullPhoto.name || values.fullPhoto}
+                            </div>
+                          )}
+                        </div>
+
+                        <div>
+                          <FormLabel required>Full Face Photograph</FormLabel>
+                          <input
+                            type="file"
+                            name="facePhoto"
+                            onChange={(event) => {
+                              if (
+                                event.currentTarget.files &&
+                                event.currentTarget.files[0]
+                              ) {
+                                setFieldValue(
+                                  "facePhoto",
+                                  event.currentTarget.files[0]
+                                );
+                              }
+                            }}
+                            onBlur={handleBlur}
+                            className={inputClass}
+                          />
+                          <ErrorMessage
+                            name="facePhoto"
+                            component="div"
+                            className="text-red-500 text-xs"
+                          />
+
+                          {values.facePhoto && (
+                            <div className="text-xs text-red-400">
+                              Selected file:{" "}
+                              {values.facePhoto.name || values.facePhoto}
+                            </div>
+                          )}
                         </div>
                       </div>
                       <div className="mt-5 flex justify-center">
                         <Button
                           className="w-36 text-white bg-blue-600 mx-4"
-                          type="button"
-                          disabled={isButtonDisabledEmail}
-                          onClick={() => onSubmitEmail(values)}
+                          type="submit"
+                          disabled={isButtonDisabled}
                         >
-                          {isButtonDisabledEmail
-                            ? "Submitting..."
-                            : "Send Mail"}
+                          {isButtonDisabled ? "Update..." : "Update Image"}
                         </Button>
                         <Button
                           className="w-36 text-white bg-red-600"
                           type="button"
-                          onClick={() => setEmailCheckDialog(false)}
                         >
                           Cancel{" "}
                         </Button>
@@ -392,59 +499,12 @@ const NoImage = () => {
           }}
         </Formik>
       </Dialog>
-
-      <Dialog
+      <NoImageDialog
         open={openNoImageDialog}
-        onClose={handleNoImageDialog}
-        keepMounted
-        aria-describedby="alert-dialog-slide-description"
-        sx={{
-          backdropFilter: "blur(5px) sepia(5%)",
-          "& .MuiDialog-paper": {
-            borderRadius: "18px",
-          },
-        }}
-        TransitionComponent={Slide}
-        transitionDuration={500}
-        fullWidth
-        maxWidth="sm"
-      >
-        <DialogTitle
-          sx={{
-            fontSize: "1.5rem",
-            fontWeight: "bold",
-            my: "10px",
-          }}
-        >
-          No Image
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText
-            sx={{
-              fontSize: "15px",
-              my: "10px",
-            }}
-          >
-            Do you want to Update?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <button
-            className="text-center text-sm font-[400] cursor-pointer hover:animate-pulse w-36 text-white bg-red-600 hover:bg-red-400 p-2 rounded-lg shadow-md mr-2"
-            onClick={handleCloseNoImageDialog}
-          >
-            <span>No</span>
-          </button>
-          <button
-            className="text-center text-sm font-[400] cursor-pointer hover:animate-pulse w-36 text-white bg-blue-600 hover:bg-green-700 p-2 rounded-lg shadow-md mr-2"
-            onClick={onNoImageSubmit}
-            disabled={isButtonDisabled}
-          >
-            {/* <span>Confirm</span> */}
-            {isButtonDisabled ? "...Updating" : "Yes"}
-          </button>
-        </DialogActions>
-      </Dialog>
+        onClose={handleCloseNoImageDialog}
+        refetch={fetchNoImageData}
+        noimageId={noimageId}
+      />
     </Layout>
   );
 };
