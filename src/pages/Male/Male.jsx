@@ -11,7 +11,6 @@ import {
   IconCircleX,
   IconEdit,
   IconEye,
-  IconPhoto,
   IconRadioactive,
 } from "@tabler/icons-react";
 import axios from "axios";
@@ -38,8 +37,9 @@ import {
   DialogTitle,
   Slide,
 } from "@mui/material";
-import { IconRefresh } from "@tabler/icons-react";
+import { IconPhotoX, IconRefresh } from "@tabler/icons-react";
 import toast from "react-hot-toast";
+import NoImageDialog from "../../components/common/NoImageDialog";
 import ProfileImageCell from "../../components/common/ProfileImageCell";
 const validationSchemaEmail = Yup.object({
   description_message: Yup.string().required("Description is Required"),
@@ -78,6 +78,7 @@ const Male = () => {
           Authorization: `Bearer ${token}`,
         },
       });
+
       setMale(response.data?.user || []);
     } catch (error) {
       console.error("Error fetching template data:", error);
@@ -160,34 +161,6 @@ const Male = () => {
       setIsButtonDisabled(false);
     }
   };
-  const onNoImageSubmit = async () => {
-    setIsButtonDisabled(true);
-    const token = localStorage.getItem("token");
-    try {
-      const respose = await axios.put(
-        `${BASE_URL}/panel-update-activation-no-image/${noimageId}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      console.log(respose, "respose");
-      if (respose.data.code === 200) {
-        toast.success(respose.data.msg || "Profile is Activated");
-        handleCloseNoImageDialog();
-        fetchMaleData();
-      } else {
-        toast.error(respose.data.msg || "Profile is Activated");
-      }
-    } catch (error) {
-      toast.error(error.message || "Error on  Activated");
-      console.error(error);
-    } finally {
-      setIsButtonDisabled(false);
-    }
-  };
 
   useEffect(() => {
     fetchMaleData();
@@ -205,7 +178,6 @@ const Male = () => {
           const imagePath = profilePhoto
             ? `${ImagePath}${profilePhoto}?t=${RandomValue}`
             : NoImagePath;
-          console.log(`${imagePath}/${profilePhoto}`, "profilePhoto");
           return (
             <ProfileImageCell
               imageUrl={imagePath}
@@ -218,9 +190,6 @@ const Male = () => {
         accessorKey: "id",
         header: "Profile Id",
         size: 50,
-        Cell: ({ row }) => {
-          return <span>{row.original.id || ""}</span>;
-        },
       },
       {
         accessorKey: "name",
@@ -237,29 +206,29 @@ const Male = () => {
         header: "Father Name",
         size: 50,
       },
+      // {
+      //   accessorKey: "profile_main_contact_num",
+      //   header: "Mobile Number",
+      //   size: 50,
+      // },
+      // {
+      //   accessorKey: "profile_gotra",
+      //   header: "Gotra",
+      // },
+      // {
+      //   accessorKey: "profile_place_of_birth",
+      //   header: "Place of Birth",
+      //   size: 50,
+      // },
       {
-        accessorKey: "profile_main_contact_num",
-        header: "Mobile Number",
-        size: 50,
-      },
-      {
-        accessorKey: "profile_gotra",
-        header: "Gotra",
-      },
-      {
-        accessorKey: "profile_place_of_birth",
-        header: "Place of Birth",
-        size: 50,
-      },
-      {
-        id: "id",
+        id: "actions",
         header: "Action",
         size: 50,
         enableHiding: false,
         Cell: ({ row }) => (
           <Flex gap="xs" className="items-center">
             <Tooltip label="No Image" position="top" withArrow>
-              <IconPhoto
+              <IconPhotoX
                 className="cursor-pointer text-blue-600 hover:text-blue-800"
                 onClick={() => handleNoImageDialog(row.original.id)}
               />
@@ -614,59 +583,12 @@ const Male = () => {
         </Formik>
       </Dialog>
 
-      {/* //no image dialog */}
-      <Dialog
+      <NoImageDialog
         open={openNoImageDialog}
-        onClose={handleNoImageDialog}
-        keepMounted
-        aria-describedby="alert-dialog-slide-description"
-        sx={{
-          backdropFilter: "blur(5px) sepia(5%)",
-          "& .MuiDialog-paper": {
-            borderRadius: "18px",
-          },
-        }}
-        TransitionComponent={Slide}
-        transitionDuration={500}
-        fullWidth
-        maxWidth="sm"
-      >
-        <DialogTitle
-          sx={{
-            fontSize: "1.5rem",
-            fontWeight: "bold",
-            my: "10px",
-          }}
-        >
-          No Image
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText
-            sx={{
-              fontSize: "15px",
-              my: "10px",
-            }}
-          >
-            Do you want to Update?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <button
-            className="text-center text-sm font-[400] cursor-pointer hover:animate-pulse w-36 text-white bg-red-600 hover:bg-red-400 p-2 rounded-lg shadow-md mr-2"
-            onClick={handleCloseNoImageDialog}
-          >
-            <span>No</span>
-          </button>
-          <button
-            className="text-center text-sm font-[400] cursor-pointer hover:animate-pulse w-36 text-white bg-blue-600 hover:bg-green-700 p-2 rounded-lg shadow-md mr-2"
-            onClick={onNoImageSubmit}
-            disabled={isButtonDisabled}
-          >
-            {/* <span>Confirm</span> */}
-            {isButtonDisabled ? "...Updating" : "Yes"}
-          </button>
-        </DialogActions>
-      </Dialog>
+        onClose={handleCloseNoImageDialog}
+        refetch={fetchMaleData}
+        noimageId={noimageId}
+      />
     </Layout>
   );
 };

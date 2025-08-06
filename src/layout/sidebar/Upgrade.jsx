@@ -9,7 +9,7 @@ export const Upgrade = ({ isCollapsed }) => {
           <>
             <span className="border-b-2 text-[#111C2D] text-sm font-[600] border-dashed border-pink-500">
               {" "}
-              Updated On: 05-08-2025
+              Updated On: 06-08-2025
             </span>
           </>
         </Box>

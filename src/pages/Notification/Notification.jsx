@@ -1,20 +1,26 @@
-import React, { useEffect, useMemo, useState } from "react";
-import Layout from "../../layout/Layout";
+import {
+  Box,
+  Button,
+  Center,
+  Flex,
+  Loader,
+  Text,
+  Tooltip,
+} from "@mantine/core";
+import { IconEdit } from "@tabler/icons-react";
 import axios from "axios";
-import BASE_URL, { NotificationPath } from "../../base/BaseUrl";
-import { Tooltip } from "@mantine/core";
 import {
   MantineReactTable,
-  useMantineReactTable,
   MRT_GlobalFilterTextInput,
   MRT_ToggleFiltersButton,
+  useMantineReactTable,
 } from "mantine-react-table";
-import { Box, Button, Center, Flex, Loader, Text } from "@mantine/core";
-import { IconEdit } from "@tabler/icons-react";
-import { useNavigate } from "react-router-dom";
-import { ImagePath, NoImagePath } from "../../base/BaseUrl";
 import moment from "moment";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import BASE_URL, { NoImagePath, NotificationPath } from "../../base/BaseUrl";
 import ProfileImageCell from "../../components/common/ProfileImageCell";
+import Layout from "../../layout/Layout";
 const Notification = () => {
   const [notification, setNotification] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -32,7 +38,14 @@ const Notification = () => {
           },
         }
       );
-      setNotification(response.data?.notification || []);
+      const updatedData = (response.data?.notification || []).map(
+        (item, index) => ({
+          ...item,
+          id: item.id ? String(item.id) : `generated-${index}`, // fallback id if missing
+        })
+      );
+      setNotification(updatedData || []);
+      // setNotification(response.data?.notification || []);
     } catch (error) {
       console.error("Error fetching template data:", error);
     } finally {
@@ -47,63 +60,6 @@ const Notification = () => {
 
   const columns = useMemo(
     () => [
-      // {
-      //   accessorKey: "notification_image",
-      //   header: "Profile Photo",
-      //   size: 150,
-      //   Cell: ({ row }) => {
-      //     const profilePhoto = row.original.notification_image;
-      //     const imagePath = profilePhoto
-      //       ? `${NotificationPath}${profilePhoto}?t=${RandomValue}`
-      //       : NoImagePath;
-      //     const [loading, setLoading] = useState(true);
-
-      //     return (
-      //       <div
-      //         style={{ position: "relative", width: "50px", height: "50px" }}
-      //       >
-      //         {loading && (
-      //           <div
-      //             style={{
-      //               position: "absolute",
-      //               top: 0,
-      //               left: 0,
-      //               width: "100%",
-      //               height: "100%",
-      //               display: "flex",
-      //               alignItems: "center",
-      //               justifyContent: "center",
-      //             }}
-      //           >
-      //             {/* Simple loader */}
-      //             <div
-      //               style={{
-      //                 width: "20px",
-      //                 height: "20px",
-      //                 border: "2px solid rgba(0, 0, 0, 0.1)",
-      //                 borderTop: "2px solid #4F46E5",
-      //                 borderRadius: "50%",
-      //                 animation: "spin 1s linear infinite",
-      //               }}
-      //             />
-      //           </div>
-      //         )}
-      //         <img
-      //           src={imagePath}
-      //           alt={profilePhoto ? "Profile" : "No Profile"}
-      //           style={{
-      //             width: "50px",
-      //             height: "50px",
-      //             borderRadius: "50%",
-      //             objectFit: "cover",
-      //             display: loading ? "none" : "block",
-      //           }}
-      //           onLoad={() => setLoading(false)}
-      //         />
-      //       </div>
-      //     );
-      //   },
-      // },
       {
         accessorKey: "notification_image",
         header: "Profile Photo",
@@ -126,9 +82,6 @@ const Notification = () => {
         accessorKey: "id",
         header: "Profile Id",
         size: 50,
-        Cell: ({ row }) => {
-          return <span>{row.original.id || ""}</span>;
-        },
       },
       {
         accessorKey: "notification_date",
@@ -154,7 +107,7 @@ const Notification = () => {
       },
 
       {
-        id: "id",
+        id: "actions",
         header: "Action",
         size: 50,
         enableHiding: false,
